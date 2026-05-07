@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>クリックゲーム</title>
+    <style>
+        .emerald-button {
+            display: inline-block;
+            background-color: #50C878;
+            color: white;
+            padding: 20px 40px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 20px;
+            box-shadow: 3px 5px 0 #3a965a;
+            cursor: pointer;
+            border: none;
+            transition: 0.1s;
+            user-select: none;
+        }
+        .emerald-button:active {
+            box-shadow: none;
+            transform: translate(3px, 5px);
+        }
+        .counter-display {
+            margin-top: 20px;
+            font-family: 'Arial Black', sans-serif;
+            font-size: 50px;
+            color: black;
+        }
+        #special-msg {
+            height: 30px;
+            color: #ff5722;
+            font-weight: bold;
+            font-size: 18px;
+            margin-top: 10px;
+        }
+        #secret-btn {
+            display: none;
+            position: absolute;
+            right: 0; 
+            bottom: 0; 
+            width: 10px;
+            height: 10px;
+            background-color: transparent;
+            border: 1px solid rgba(0,0,0,0.05); 
+            color: transparent; 
+            cursor: pointer;
+            z-index: 10;
+        }
+        @keyframes rainbow-bg {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .rainbow-active {
+            background: linear-gradient(124deg, #ff2400, #e81d1d, #e8b71d, #e3e81d, #1de840, #1ddde8, #2b1de8, #dd00f3, #dd00f3);
+            background-size: 1800% 1800%;
+            animation: rainbow-bg 18s ease infinite;
+        }
+    </style>
+</head>
+<body>
+
+<div style="position: relative; text-align: center; padding: 30px 30px 1000px 30px;">
+    <h1 style="text-align: center;">クリックゲーム</h1>
+    
+    <button style="background-color:red; color:white; border-radius:5px; cursor:pointer;" onclick="resetCount()">リセット</button>
+
+    <div id="count-num" class="counter-display">0</div>
+    
+    <button type="button" class="emerald-button" onclick="countUp()">
+        押す
+    </button>
+
+    <div id="special-msg"></div>
+
+    <button id="rainbow-toggle-btn" style="display: none; margin-top: 10px; padding: 10px 20px; cursor: pointer; border-radius: 10px; border: 1px solid #ccc;" onclick="toggleRainbow()">
+      🌈 背景の虹色をON/OFFする
+    </button>
+
+    <button id="secret-btn" onclick="secretPower()">？</button>
+</div>
+
+<script>
+    let savedCount = localStorage.getItem('myClickCount');
+    let count = savedCount ? parseInt(savedCount) : 0;
+
+    window.onload = function() {
+        updateDisplay();
+    };
+
+    function countUp() {
+        count = count + 1; 
+        localStorage.setItem('myClickCount', count);
+        updateDisplay();
+    }
+
+    function resetCount() {
+        if (confirm("リセットしますか？")) {
+            localStorage.removeItem('myClickCount');
+            document.body.classList.remove('rainbow-active');
+            location.reload();
+        }
+    }
+
+    function updateDisplay() {
+        const numDisplay = document.getElementById('count-num');
+        const msgArea = document.getElementById('special-msg');
+        const secretBtn = document.getElementById('secret-btn');
+        const toggleBtn = document.getElementById('rainbow-toggle-btn');
+        numDisplay.innerHTML = count;
+
+        if (count >= 1000000) {
+            msgArea.innerHTML = "100万回達成！ゲームクリア！";
+            numDisplay.style.color = "gold";
+            document.body.classList.add('rainbow-active');
+            toggleBtn.style.display = "inline-block";
+        } else if (count >= 100000) {
+            msgArea.innerHTML = "10万回達成！";
+            numDisplay.style.color = "blue";
+        } else if (count >= 10000) {
+            msgArea.innerHTML = "1万回達成！";
+            numDisplay.style.color = "green";
+            secretBtn.style.display = "block";
+        } else if (count >= 1000) {
+            msgArea.innerHTML = "1000回達成！";
+            numDisplay.style.color = "yellow";
+        } else if (count >= 100) {
+            msgArea.innerHTML = "100回達成！";
+            numDisplay.style.color = "orange";
+        } else if (count >= 10) {
+            msgArea.innerHTML = "10回達成！";
+            numDisplay.style.color = "red";
+        } 
+    } 
+
+    function secretPower() {
+        alert("よく見つけましたね\n隠しボタンです");
+    }
+
+    let isKeyPressed = false;
+    window.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            if (!isKeyPressed) {
+                countUp();
+                isKeyPressed = true;
+            }
+        }
+    });
+    window.addEventListener('keyup', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+            isKeyPressed = false;
+        }
+    });
+
+    function toggleRainbow() {
+        document.body.classList.toggle('rainbow-active');
+    }
+</script>
+</body>
+</html>
