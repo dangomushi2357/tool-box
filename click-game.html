@@ -67,6 +67,10 @@
     
     <button style="background-color:red; color:white; border-radius:5px; cursor:pointer;" onclick="resetCount()">リセット</button>
 
+    <button style="background-color: #6c757d; color: white; border-radius: 5px; cursor: pointer; margin-left: 10px;" onclick="goHome()">
+    ホームに戻る
+    </button>
+
     <div id="count-num" class="counter-display">0</div>
     
     <button type="button" class="emerald-button" onclick="countUp()">
@@ -157,6 +161,9 @@
 
     function toggleRainbow() {
         document.body.classList.toggle('rainbow-active');
+    }
+    function goHome() {
+    location.href = "index.html";
     }
 </script>
 </body>
