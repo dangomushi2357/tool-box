@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>数取機</title>
+    <style>
+        body { text-align: center; font-family: sans-serif; background-color: #eef2f3; padding-top: 50px; }
+        #count-val { font-size: 120px; margin: 20px 0; font-weight: bold; }
+        .main-btn { 
+            width: 150px; height: 150px; border-radius: 50%; border: none; 
+            background-color: #007bff; color: white; font-size: 40px; 
+            cursor: pointer; box-shadow: 0 8px #0056b3; 
+        }
+        .main-btn:active { box-shadow: none; transform: translateY(8px); }
+        .sub-btn { margin-top: 30px; padding: 10px 20px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <h1>数取機</h1>
+    
+    <div id="count-val">0</div>
+
+    <button class="main-btn" onclick="add()">+</button>
+    <button class="main-btn" onclick="minus()">-</button>
+
+    <br>
+    <button class="sub-btn" onclick="reset()">リセット</button>
+    <button class="sub-btn" onclick="goHome()">ホームに戻る</button>
+
+    <script>
+        let n = 0;
+        function add() {
+            n++;
+            document.getElementById('count-val').innerText = n;
+        }
+        function minus() {
+            n--;
+            document.getElementById('count-val').innerText = n;
+        }
+        function reset() {
+            if(confirm("0に戻しますか？")) {
+                n = 0;
+                document.getElementById('count-val').innerText = n;
+            }
+        }
+        function goHome() {
+            location.href = "index.html";
+        }
+    </script>
+</body>
+</html>
