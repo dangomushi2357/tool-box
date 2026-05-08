@@ -16,17 +16,22 @@
     </style>
 </head>
 <body>
-
     <h1>数取機</h1>
-    
-    <div id="count-val">0</div>
 
+    <div style="margin-bottom: 20px;">
+        <button style="background-color:red; color:white; border-radius:5px; cursor:pointer; padding: 5px 10px; border: none;" onclick="reset()">
+            リセット
+        </button>
+        <button style="background-color: #6c757d; color: white; border-radius: 5px; cursor: pointer; margin-left: 10px; padding: 5px 10px; border: none;" onclick="goHome()">
+            ホームに戻る
+        </button>
+    </div>
+
+    <div id="count-val">0</div>
     <button class="main-btn" onclick="add()">+</button>
     <button class="main-btn" onclick="minus()">-</button>
 
     <br>
-    <button class="sub-btn" onclick="reset()">リセット</button>
-    <button class="sub-btn" onclick="goHome()">ホームに戻る</button>
 
     <script>
         let n = 0;
