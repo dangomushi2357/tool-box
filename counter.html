@@ -4,51 +4,95 @@
     <meta charset="UTF-8">
     <title>数取機</title>
     <style>
-        body { text-align: center; font-family: sans-serif; background-color: #eef2f3; padding-top: 50px; }
+        body { text-align: center; font-family: sans-serif; background-color: #f0f0f0; padding-top: 50px; }
         #count-val { font-size: 120px; margin: 20px 0; font-weight: bold; }
-        .main-btn { 
-            width: 150px; height: 150px; border-radius: 50%; border: none; 
-            background-color: #007bff; color: white; font-size: 40px; 
-            cursor: pointer; box-shadow: 0 8px #0056b3; 
+
+        .main-btn {
+            display: inline-block;
+            color: white;
+            width: 120px;
+            height: 100px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 50px;
+            cursor: pointer;
+            border: none;
+            transition: 0.1s;
+            user-select: none;
+            margin: 15px;
+            line-height: 100px;
         }
-        .main-btn:active { box-shadow: none; transform: translateY(8px); }
-        .sub-btn { margin-top: 30px; padding: 10px 20px; cursor: pointer; }
+
+        .plus-btn {
+            background-color: #007bff;
+            box-shadow: 3px 10px 0 #0056b3;
+        }
+
+        .minus-btn {
+            background-color: #dc3545;
+            box-shadow: 3px 10px 0 #a71d2a;
+        }
+
+        .main-btn:active {
+            box-shadow: none;
+            transform: translateY(10px) translateX(5px);
+        }
+
+        .sub-btn { border: none; border-radius: 5px; cursor: pointer; padding: 8px 15px; color: white; }
     </style>
 </head>
 <body>
     <h1>数取機</h1>
 
     <div style="margin-bottom: 20px;">
-        <button style="background-color:red; color:white; border-radius:5px; cursor:pointer; padding: 5px 10px; border: none;" onclick="reset()">
-            リセット
-        </button>
-        <button style="background-color: #6c757d; color: white; border-radius: 5px; cursor: pointer; margin-left: 10px; padding: 5px 10px; border: none;" onclick="goHome()">
-            ホームに戻る
-        </button>
+        <button class="sub-btn" style="background-color:red;" onclick="reset()">リセット</button>
+        <button class="sub-btn" style="background-color: #6c757d; margin-left: 10px;" onclick="goHome()">ホームに戻る</button>
     </div>
 
     <div id="count-val">0</div>
-    <button class="main-btn" onclick="add()">+</button>
-    <button class="main-btn" onclick="minus()">-</button>
 
-    <br>
+    <button class="main-btn minus-btn" onclick="minus()">-</button>
+    <button class="main-btn plus-btn" onclick="add()">+</button>
 
     <script>
-        let n = 0;
+        let n = parseInt(localStorage.getItem('counter_val')) || 0;
+        const display = document.getElementById('count-val');
+        display.innerText = n;
+
+        function save() {
+            localStorage.setItem('counter_val', n);
+        }
+        function updateDisplay() {
+            display.innerText = n;
+        
+            if (n < 0) {
+                display.style.color = "red";
+            } else {
+                display.style.color = "black";
+            }
+        }
+
         function add() {
             n++;
-            document.getElementById('count-val').innerText = n;
+            updateDisplay();
+            save();
         }
+
         function minus() {
             n--;
-            document.getElementById('count-val').innerText = n;
+            updateDisplay();
+            save();
         }
+
         function reset() {
             if(confirm("0に戻しますか？")) {
                 n = 0;
-                document.getElementById('count-val').innerText = n;
+                updateDisplay();
+                save();
             }
         }
+        updateDisplay();
+
         function goHome() {
             location.href = "index.html";
         }
