@@ -58,7 +58,7 @@
             background-size: 1800% 1800%;
             animation: rainbow-bg 18s ease infinite;
         }
-        /* 追加分：グラフエリア */
+
         .stats-box {
             margin-top: 30px;
             padding: 15px;
@@ -238,19 +238,37 @@
     }
 
     function displayGraph() {
-        const history = JSON.parse(localStorage.getItem('click_history') || "[]");
-        const container = document.getElementById('graph-container');
-        container.innerHTML = '';
-        history.forEach(data => {
-            const bar = document.createElement('div');
-            bar.style.width = '20px';
-            bar.style.height = Math.min(data.score, 120) + 'px';
-            bar.style.backgroundColor = data.score >= 100 ? '#50C878' : '#ccc';
-            bar.style.borderRadius = '3px 3px 0 0';
-            bar.title = data.date + ": " + data.score + "回";
-            container.appendChild(bar);
-        });
-    }
+    const history = JSON.parse(localStorage.getItem('click_history') || "[]");
+    const container = document.getElementById('graph-container');
+    container.innerHTML = ''; 
+
+    history.forEach(data => {
+        const column = document.createElement('div');
+        column.style.display = 'flex';
+        column.style.flexDirection = 'column';
+        column.style.alignItems = 'center';
+        column.style.gap = '5px';
+
+        const bar = document.createElement('div');
+        const barHeight = Math.min(data.score, 120); 
+        bar.style.width = '25px';
+        bar.style.height = barHeight + 'px';
+        bar.style.backgroundColor = data.score >= 100 ? '#50C878' : '#ccc';
+        bar.style.borderRadius = '3px 3px 0 0';
+        
+        bar.title = data.score + "回"; 
+
+        const dateText = document.createElement('div');
+        const shortDate = data.date.split('/').slice(1).join('/'); // "5/11" 形式にする
+        dateText.innerText = shortDate;
+        dateText.style.fontSize = '10px';
+        dateText.style.color = '#666';
+
+        column.appendChild(bar);
+        column.appendChild(dateText);
+        container.appendChild(column);
+    });
+}
 </script>
 </body>
 </html>
