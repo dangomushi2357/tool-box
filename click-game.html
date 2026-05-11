@@ -58,6 +58,14 @@
             background-size: 1800% 1800%;
             animation: rainbow-bg 18s ease infinite;
         }
+        /* 追加分：グラフエリア */
+        .stats-box {
+            margin-top: 30px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            display: inline-block;
+        }
     </style>
 </head>
 <body>
@@ -79,8 +87,15 @@
 
     <div id="special-msg"></div>
 
+    <div class="stats-box">
+        <h3>🔥 連続記録: <span id="streak-count">0</span>日</h3>
+        <div id="graph-container" style="display: flex; align-items: flex-end; height: 120px; gap: 8px; border-bottom: 2px solid #333; padding: 10px; justify-content: center;"></div>
+        <p style="font-size: 12px;">直近7日間の最高スコア</p>
+    </div>
+
+    <br>
     <button id="rainbow-toggle-btn" style="display: none; margin-top: 10px; padding: 10px 20px; cursor: pointer; border-radius: 10px; border: 1px solid #ccc;" onclick="toggleRainbow()">
-      🌈 背景の虹色をON/OFFする
+    🌈 背景の虹色をON/OFFする
     </button>
 
     <button id="secret-btn" onclick="secretPower()">？</button>
@@ -91,6 +106,7 @@
     let count = savedCount ? parseInt(savedCount) : 0;
 
     window.onload = function() {
+        initStats();
         updateDisplay();
     };
 
@@ -98,11 +114,20 @@
         count = count + 1; 
         localStorage.setItem('myClickCount', count);
         updateDisplay();
+        
+        if (count === 100) {
+            updateStreak();
+        } else if (count > 100) {
+            saveScore(count);
+        }
     }
 
     function resetCount() {
         if (confirm("リセットしますか？")) {
             localStorage.removeItem('myClickCount');
+            localStorage.removeItem('click_streak');
+            localStorage.removeItem('last_play_date');
+            localStorage.removeItem('click_history');
             document.body.classList.remove('rainbow-active');
             location.reload();
         }
@@ -116,15 +141,15 @@
         numDisplay.innerHTML = count;
 
         if (count >= 1000000) {
-            msgArea.innerHTML = "100万回達成！ゲームクリア！";
+            msgArea.innerHTML = "1000000回達成！ゲームクリア！\nこの後もクリックした回数は増え続けます。";
             numDisplay.style.color = "gold";
             document.body.classList.add('rainbow-active');
             toggleBtn.style.display = "inline-block";
         } else if (count >= 100000) {
-            msgArea.innerHTML = "10万回達成！";
+            msgArea.innerHTML = "100000回達成！";
             numDisplay.style.color = "blue";
         } else if (count >= 10000) {
-            msgArea.innerHTML = "1万回達成！";
+            msgArea.innerHTML = "10000回達成！";
             numDisplay.style.color = "green";
             secretBtn.style.display = "block";
         } else if (count >= 1000) {
@@ -163,7 +188,68 @@
         document.body.classList.toggle('rainbow-active');
     }
     function goHome() {
-    location.href = "index.html";
+        location.href = "index.html";
+    }
+
+    function initStats() {
+        const lastDate = localStorage.getItem('last_play_date');
+        let streak = parseInt(localStorage.getItem('click_streak') || "0");
+        if (lastDate) {
+            const today = new Date();
+            const last = new Date(lastDate);
+            today.setHours(0, 0, 0, 0);
+            last.setHours(0, 0, 0, 0);
+            if ((today - last) / (1000 * 60 * 60 * 24) > 1) {
+                streak = 0;
+                localStorage.setItem('click_streak', "0");
+            }
+        }
+        document.getElementById('streak-count').innerText = streak;
+        displayGraph();
+    }
+
+    function updateStreak() {
+        const todayStr = new Date().toLocaleDateString();
+        const lastDate = localStorage.getItem('last_play_date');
+        let streak = parseInt(localStorage.getItem('click_streak') || "0");
+
+        if (lastDate !== todayStr) {
+            streak++;
+            localStorage.setItem('click_streak', streak);
+            localStorage.setItem('last_play_date', todayStr);
+            document.getElementById('streak-count').innerText = streak;
+            alert("100回達成！連続記録更新！");
+        }
+        saveScore(count);
+    }
+
+    function saveScore(score) {
+        const todayStr = new Date().toLocaleDateString();
+        let history = JSON.parse(localStorage.getItem('click_history') || "[]");
+        const todayIdx = history.findIndex(i => i.date === todayStr);
+        if (todayIdx > -1) {
+            if (score > history[todayIdx].score) history[todayIdx].score = score;
+        } else {
+            history.push({ date: todayStr, score: score });
+        }
+        if (history.length > 7) history.shift();
+        localStorage.setItem('click_history', JSON.stringify(history));
+        displayGraph();
+    }
+
+    function displayGraph() {
+        const history = JSON.parse(localStorage.getItem('click_history') || "[]");
+        const container = document.getElementById('graph-container');
+        container.innerHTML = '';
+        history.forEach(data => {
+            const bar = document.createElement('div');
+            bar.style.width = '20px';
+            bar.style.height = Math.min(data.score, 120) + 'px';
+            bar.style.backgroundColor = data.score >= 100 ? '#50C878' : '#ccc';
+            bar.style.borderRadius = '3px 3px 0 0';
+            bar.title = data.date + ": " + data.score + "回";
+            container.appendChild(bar);
+        });
     }
 </script>
 </body>
