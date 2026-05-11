@@ -66,6 +66,26 @@
             border-radius: 15px;
             display: inline-block;
         }
+        /* カスタムツールチップのスタイル */
+        .custom-tooltip {
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            pointer-events: none;
+            display: none;
+            z-index: 1000;
+            white-space: nowrap;
+        }
+        .graph-bar {
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .graph-bar:hover {
+            opacity: 0.8;
+        }
     </style>
 </head>
 <body>
@@ -101,6 +121,8 @@
     <button id="secret-btn" onclick="secretPower()">？</button>
 </div>
 
+<div id="tooltip" class="custom-tooltip"></div>
+
 <script>
     let savedCount = localStorage.getItem('myClickCount');
     let count = savedCount ? parseInt(savedCount) : 0;
@@ -124,11 +146,7 @@
 
     function resetCount() {
         if (confirm("リセットしますか？")) {
-            localStorage.removeItem('myClickCount');
-            localStorage.removeItem('click_streak');
-            localStorage.removeItem('last_play_date');
-            localStorage.removeItem('click_history');
-            document.body.classList.remove('rainbow-active');
+            localStorage.clear();
             location.reload();
         }
     }
@@ -238,37 +256,51 @@
     }
 
     function displayGraph() {
-    const history = JSON.parse(localStorage.getItem('click_history') || "[]");
-    const container = document.getElementById('graph-container');
-    container.innerHTML = ''; 
+        const history = JSON.parse(localStorage.getItem('click_history') || "[]");
+        const container = document.getElementById('graph-container');
+        container.innerHTML = ''; 
+        const tooltip = document.getElementById('tooltip');
 
-    history.forEach(data => {
-        const column = document.createElement('div');
-        column.style.display = 'flex';
-        column.style.flexDirection = 'column';
-        column.style.alignItems = 'center';
-        column.style.gap = '5px';
+        history.forEach(data => {
+            const column = document.createElement('div');
+            column.style.display = 'flex';
+            column.style.flexDirection = 'column';
+            column.style.alignItems = 'center';
+            column.style.gap = '5px';
 
-        const bar = document.createElement('div');
-        const barHeight = Math.min(data.score, 120); 
-        bar.style.width = '25px';
-        bar.style.height = barHeight + 'px';
-        bar.style.backgroundColor = data.score >= 100 ? '#50C878' : '#ccc';
-        bar.style.borderRadius = '3px 3px 0 0';
-        
-        bar.title = data.score + "回"; 
+            const bar = document.createElement('div');
+            const barHeight = Math.min(data.score, 120); 
+            bar.style.width = '25px';
+            bar.style.height = barHeight + 'px';
+            bar.style.backgroundColor = data.score >= 100 ? '#50C878' : '#ccc';
+            bar.style.borderRadius = '3px 3px 0 0';
+            bar.classList.add('graph-bar'); 
 
-        const dateText = document.createElement('div');
-        const shortDate = data.date.split('/').slice(1).join('/'); // "5/11" 形式にする
-        dateText.innerText = shortDate;
-        dateText.style.fontSize = '10px';
-        dateText.style.color = '#666';
+            bar.addEventListener('mouseover', function(e) {
+                tooltip.innerText = data.date + ": " + data.score + "回";
+                tooltip.style.display = 'block';
+            });
 
-        column.appendChild(bar);
-        column.appendChild(dateText);
-        container.appendChild(column);
-    });
-}
+            bar.addEventListener('mousemove', function(e) {
+                tooltip.style.left = (e.pageX + 15) + 'px';
+                tooltip.style.top = (e.pageY + 15) + 'px';
+            });
+
+            bar.addEventListener('mouseout', function() {
+                tooltip.style.display = 'none';
+            });
+
+            const dateText = document.createElement('div');
+            const shortDate = data.date.split('/').slice(1).join('/'); 
+            dateText.innerText = shortDate;
+            dateText.style.fontSize = '10px';
+            dateText.style.color = '#666';
+
+            column.appendChild(bar);
+            column.appendChild(dateText);
+            container.appendChild(column);
+        });
+    }
 </script>
 </body>
 </html>
