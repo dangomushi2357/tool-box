@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>クリックゲーム - v3.0</title>
+    <title>クリックゲーム - v3.2.0</title>
     <style>
         body {
             font-family: 'Helvetica Neue', Arial, sans-serif;
@@ -24,7 +24,7 @@
             border-radius: 20px;
             font-weight: bold;
             font-size: 24px;
-            box-shadow: 0 6px 0 #3a965a;
+            box-shadow: 3px 5px 0 #3a965a;
             cursor: pointer;
             border: none;
             transition: 0.1s;
@@ -33,7 +33,7 @@
         }
         .emerald-button:active {
             box-shadow: none;
-            transform: translate(0, 6px);
+            transform: translate(4px, 6px);
         }
         .display-container {
             background: white;
@@ -73,19 +73,21 @@
             border-radius: 15px;
             display: inline-block;
             width: 100%;
+            box-sizing: border-box;
         }
         #graph-container {
             display: flex;
             align-items: flex-end;
             height: 120px;
-            gap: 8px;
+            gap: 12px;
             border-bottom: 2px solid #333;
-            padding: 10px;
-            justify-content: center;
+            padding: 10px 20px;
+            justify-content: flex-end;
+            overflow-x: auto;
         }
         .graph-bar {
             cursor: pointer;
-            transition: opacity 0.2s;
+            transition: opacity 0.2s, height 0.3s;
         }
         .custom-tooltip {
             position: absolute;
@@ -151,6 +153,7 @@
 
 <div class="container">
     <h1>クリックゲーム</h1>
+    <a>1日100回クリックすると、連続記録が更新されます。</a>
     <div style="margin-bottom: 20px;">
         <button class="small-btn reset-btn" onclick="resetCount()">リセット</button>
         <button class="small-btn home-btn" onclick="goHome()">ホームに戻る</button>
@@ -171,6 +174,7 @@
     <div class="details-container">
         <details>
             <summary style="cursor: pointer; color: #50C878; font-weight: bold; margin-bottom:10px;">📊 全履歴を表示</summary>
+            <p>履歴は1年ごとにリセットされます。保存したい場合は下のボタンを押してください</p>
             <button class="small-btn dl-btn" onclick="downloadCSV()">履歴をCSVで保存する</button>
             <div id="full-history-list"></div>
         </details>
@@ -317,11 +321,28 @@
         const tooltip = document.getElementById('tooltip');
         container.innerHTML = '';
         historyList.innerHTML = '';
-        history.slice(-7).forEach(data => {
+
+        let recentHistory = history.slice(-7); 
+        while (recentHistory.length < 7) {
+            recentHistory.unshift({ date: "", score: -1 });
+        }
+
+        let maxScore = 0;
+        recentHistory.forEach(data => { if (data.score > maxScore) maxScore = data.score; });
+        if (maxScore < 100) maxScore = 100;
+
+        recentHistory.forEach(data => {
             const column = document.createElement('div');
             column.style.cssText = "display:flex; flex-direction:column; align-items:center; gap:5px;";
+            
+            if (data.score === -1) {
+                column.style.width = "25px";
+                container.appendChild(column);
+                return;
+            }
+
             const bar = document.createElement('div');
-            const barHeight = Math.min(data.score, 120); 
+            const barHeight = Math.min((data.score / maxScore) * 110, 110);
             bar.style.cssText = `width:25px; height:${barHeight}px; border-radius:3px 3px 0 0;`;
             bar.style.backgroundColor = data.score >= 100 ? '#50C878' : '#ccc';
             bar.className = "graph-bar";
