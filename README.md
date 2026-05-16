@@ -21,7 +21,7 @@ https://dangomushi2357.github.io/tool-box/index.html
 
 ## アップデート履歴
 
-### 現在のバージョン：v2.1.1
+### 現在のバージョン：v2.1.2
 
 ---
 © 2026 ダンゴムシ
