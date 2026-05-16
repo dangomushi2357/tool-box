@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>クリックゲーム - v3.2.0</title>
+    <title>クリックゲーム - v3.2.2</title>
     <style>
         body {
             font-family: 'Helvetica Neue', Arial, sans-serif;
@@ -199,6 +199,7 @@
         count = count + 1; 
         todaySessionCount = todaySessionCount + 1; 
         localStorage.setItem('myClickCount', count);
+        localStorage.setItem('todaySessionCount', todaySessionCount);
         updateDisplay();
         if (todaySessionCount === 100) {
             updateStreak();
@@ -208,7 +209,7 @@
     }
 
     function resetCount() {
-        if (confirm("リセットしますか？")) {
+        if (confirm("リresetしますか？")) {
             localStorage.clear();
             location.reload();
         }
@@ -270,18 +271,29 @@
     function goHome() { location.href = "index.html"; }
 
     function initStats() {
+        const todayStr = new Date().toLocaleDateString();
         const lastDate = localStorage.getItem('last_play_date');
         let streak = parseInt(localStorage.getItem('click_streak') || "0");
-        if (lastDate) {
-            const today = new Date();
-            const last = new Date(lastDate);
-            today.setHours(0, 0, 0, 0);
-            last.setHours(0, 0, 0, 0);
-            if ((today - last) / (1000 * 60 * 60 * 24) > 1) {
-                streak = 0;
-                localStorage.setItem('click_streak', "0");
+        
+        let savedTodayCount = localStorage.getItem('todaySessionCount');
+        if (lastDate === todayStr) {
+            todaySessionCount = savedTodayCount ? parseInt(savedTodayCount) : 0;
+        } else {
+            todaySessionCount = 0;
+            localStorage.setItem('todaySessionCount', "0");
+            
+            if (lastDate) {
+                const today = new Date();
+                const last = new Date(lastDate);
+                today.setHours(0, 0, 0, 0);
+                last.setHours(0, 0, 0, 0);
+                if ((today - last) / (1000 * 60 * 60 * 24) > 1) {
+                    streak = 0;
+                    localStorage.setItem('click_streak', "0");
+                }
             }
         }
+        
         document.getElementById('streak-count').innerText = streak;
         displayGraph();
     }
