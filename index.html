@@ -5,7 +5,6 @@
     <meta name="google-site-verification" content="QQ1fzUYohnQGbGYqUjzuv_oJ70cazP0YJX2BmhB9wq4" />
     <title>ダンゴムシのミニツールボックス</title>
     <style>
-
         body { 
             text-align: center; 
             background-color: #f0f0f0; 
@@ -13,16 +12,13 @@
             margin: 0; 
             padding-bottom: 50px;
         }
-
         header {
             background-color: #50C878;
             color: white;
             padding: 30px 10px;
             margin-bottom: 30px;
         }
-
         ul { list-style: none; padding: 0; }
-
         .tool-link {
             display: inline-block;
             width: 250px;
@@ -36,29 +32,24 @@
             transition: 0.1s;
             user-select: none;
         }
-
         .btn-counter { color: #28a745; box-shadow: 3px 6px 0 #1e7e34; }
-
+        .btn-memo { color: #17a2b8; box-shadow: 3px 6px 0 #117a8b; }
         .btn-game { color: #007bff; box-shadow: 3px 6px 0 #0056b3; }
-
         .tool-link:active {
             box-shadow: none;
             transform: translateY(6px) translateX(3px);
         }
-
         .update-section {
             max-width: 500px;
             margin: 50px auto 0; 
             text-align: left;
         }
-
         details {
             background: #fff;
             border: 2px solid #ccc;
             border-radius: 10px;
             overflow: hidden;
         }
-
         summary {
             padding: 10px;
             cursor: pointer;
@@ -66,7 +57,6 @@
             background-color: #eee;
             outline: none;
         }
-
         .update-content { padding: 10px 20px; font-size: 0.9rem; }
         .update-content li { margin-bottom: 5px; border-bottom: 1px solid #f0f0f0; }
     </style>
@@ -82,6 +72,11 @@
 <ul>
     <li>
         <a href="counter.html" class="tool-link btn-counter">数取機</a>
+        <p>シンプルで使いやすい。デバイス保存機能付き。</p>
+    </li>
+    <li>
+        <a href="memo.html" class="tool-link btn-memo">メモ帳</a>
+        <p>シンプルなメモ帳。デバイス保存・メモロック機能付き。</p>
     </li>
 </ul>
 
@@ -89,14 +84,16 @@
 <ul>
     <li>
         <a href="click-game.html" class="tool-link btn-game">クリックゲーム</a>
+        <p>ただただクリックしていくだけのゲーム。連続記録・デバイス保存など多数機能付き。たまに仕掛けがあるかも。</p>
     </li>
 </ul>
 
 <div class="update-section">
     <details>
-        <summary>アップデート履歴 (最新: v2.1.2、2026.05.16)</summary>
+        <summary>アップデート履歴 (最新: v2.2.0、2026.05.16)</summary>
         <div class="update-content">
             <ul>
+                <li><strong>v2.2.0</strong>: メモ帳の追加 (2026.05.16)</li>
                 <li><strong>v2.1.2</strong>: 細かなバクの修正 (2026.05.16)</li>
                 <li><strong>v2.1.1</strong>: 細かなバグの修正 (2026.05.14)</li>
                 <li><strong>v2.1.0</strong>: クリックゲームに新機能追加（連続記録機能、履歴保持機能） (2026.05.11)</li>
