@@ -29,7 +29,7 @@
         }
         .menu-grid {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: 1fr 1fr;
             gap: 15px;
             margin-bottom: 30px;
         }
@@ -118,7 +118,7 @@
 
     <div class="menu-grid">
         <a href="memo.html" class="menu-card">
-            <div class="menu-title">メモ帳</div>
+            <div class="menu-title">一言メモ帳</div>
         </a>
         <a href="counter.html" class="menu-card">
             <div class="menu-title">数取機</div>
@@ -143,12 +143,11 @@
         <div class="update-title">🛠️ アップデート履歴</div>
         <div>• v2.3.0: トップ画面に「同期コード」による全データ一括引き継ぎ機能を追加</div>
         <div>• v1.1.0: メモ帳の複数行入力（改行）に対応</div>
-        <div>• v1.0.0: ミニツールボックスを公開（メモ帳、数取機、ゲーム）</div>
+        <div>• v1.0.0: ミニツールボックスを公開（メモ帳、数取機、ゲームなど）</div>
     </div>
 </div>
 
 <script>
-    // 対象とする3つのアプリのキーだけを厳選
     const TARGET_KEYS = [
         'myMemoHistory',
         'myMemoPasscode',
