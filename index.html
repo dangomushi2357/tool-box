@@ -81,7 +81,6 @@
         .btn-export { background-color: #9c27b0; }
         .btn-import { background-color: #009688; }
 
-        /* 💡QRコードを表示するためのポップアップ（モーダル）の見た目 */
         .qr-modal {
             display: none;
             position: fixed;
@@ -151,9 +150,9 @@
 </ul>
 
 <div class="sync-section">
-    <div class="sync-title">全データ一括同期（QRコード対応版）</div>
+    <div class="sync-title">全データ一括同期（オートQRコード対応版）</div>
     <div class="sync-desc">
-        データをコード化し、画面にQRコードを表示します。別のデバイスのカメラで読み取るか、コードを入力することで簡単に引っ越しができます。
+        データをコード化し、このサイトを開く特製QRコードを表示します。別のデバイスのカメラで読み取るだけで、自動的にすべてのデータが引っ越し（同期）されます。
     </div>
     <div class="sync-buttons">
         <button class="sync-btn btn-export" onclick="exportAllData()">同期QRを発行</button>
@@ -164,7 +163,7 @@
 <div id="qr-screen" class="qr-modal">
     <div class="qr-content">
         <h3 style="margin: 0 0 10px 0; color:#333;">📱 同期用QRコード</h3>
-        <p style="font-size:12px; color:#666; margin:0;">別の端末のカメラでこのQRコードをスキャンして、出てきた文字をコピーしてください。</p>
+        <p style="font-size:12px; color:#666; margin:0;">別の端末のカメラでこのQRコードをスキャンしてください。自動的にサイトが開き、データが同期されます。</p>
         <div id="qrcode"></div>
         <button class="sync-btn btn-import" style="width:100%;" onclick="closeQR()">閉じる</button>
     </div>
@@ -172,9 +171,10 @@
 
 <div class="update-section">
     <details>
-        <summary>アップデート履歴 (最新: v3.1.0、2026.05.16)</summary>
+        <summary>アップデート履歴 (最新: v3.2.0、2026.05.16)</summary>
         <div class="update-content">
             <ul>
+                <li><strong>v3.2.0</strong>: カメラでかざすだけのオート同期QRコード機能を追加 (2026.05.16)</li>
                 <li><strong>v3.1.0</strong>: 同期用QRコード表示機能を追加 (2026.05.16)</li>
                 <li><strong>v3.0.0</strong>: バックアップ機能追加・メモ帳追加 (2026.05.16)</li>
                 <li><strong>v2.1.2</strong>: 細かなバグの修正 (2026.05.16)</li>
@@ -201,6 +201,17 @@
         'click_history'
     ];
 
+    window.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const syncCode = urlParams.get('sync');
+
+        if (syncCode) {
+            const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            window.history.replaceState({path: cleanUrl}, '', cleanUrl);
+            processImport(syncCode, true); 
+        }
+    });
+
     function exportAllData() {
         let allData = {};
         let hasData = false;
@@ -225,16 +236,18 @@
             utf8Bytes.forEach(b => binString += String.fromCharCode(b));
             const syncCode = btoa(binString);
             
+            const currentUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            const autoSyncUrl = currentUrl + "?sync=" + syncCode;
+
             document.getElementById('qrcode').innerHTML = "";
             
             new QRCode(document.getElementById("qrcode"), {
-                text: syncCode,
+                text: autoSyncUrl,
                 width: 200,
                 height: 200
             });
 
             document.getElementById('qr-screen').style.display = 'flex';
-
             navigator.clipboard.writeText(syncCode).catch(() => {});
 
         } catch (e) {
@@ -247,11 +260,14 @@
     }
 
     function importAllData() {
-        const code = prompt("スキャンした「同期コード」をここに貼り付けてください：\n（注意：現在この端末にあるデータは上書きされます）");
+        const code = prompt("貼り付け用の「同期コード」を持っている場合は、ここに貼り付けてください：\n（注意：現在この端末にあるデータは上書きされます）");
         if (!code || code.trim() === "") return;
+        processImport(code.trim(), false);
+    }
 
+    function processImport(code, isAuto) {
         try {
-            const binString = atob(code.trim());
+            const binString = atob(code);
             const len = binString.length;
             const bytes = new Uint8Array(len);
             for (let i = 0; i < len; i++) {
@@ -261,9 +277,11 @@
             const importedData = JSON.parse(jsonStr);
             
             if (importedData && typeof importedData === 'object' && !Array.isArray(importedData)) {
-                if (!confirm("データを読み込みます。既存のデータが上書きされますがよろしいですか？")) {
-                    return;
-                }
+                const msg = isAuto 
+                    ? "QRコードから同期データを検出しました！\nこの端末の既存のデータを上書きして、データを復元しますか？"
+                    : "データを読み込みます。既存のデータが上書きされますがよろしいですか？";
+
+                if (!confirm(msg)) return;
 
                 TARGET_KEYS.forEach(key => localStorage.removeItem(key));
 
@@ -273,12 +291,13 @@
                     }
                 });
 
-                alert("すべてのデータの同期に成功しました！");
+                alert("すべてのデータの同期（復元）に成功しました！");
+                location.reload();
             } else {
-                alert("同期コードの形式が正しくありません。");
+                alert("同期データの形式が正しくありません。");
             }
         } catch (e) {
-            alert("同期コードの解析に失敗しました。正しいコードを入力してください。");
+            alert("同期データの解析に失敗しました。URLが途中で切れているか、コードが間違っています。");
         }
     }
 </script>
