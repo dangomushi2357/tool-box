@@ -2,84 +2,85 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <meta name="google-site-verification" content="QQ1fzUYohnQGbGYqUjzuv_oJ70cazP0YJX2BmhB9wq4" />
     <title>ダンゴムシのミニツールボックス</title>
     <style>
-        body {
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            background-color: #f0f4f8;
-            color: #333;
-            margin: 0;
-            padding: 0;
+
+        body { 
+            text-align: center; 
+            background-color: #f0f0f0; 
+            font-family: sans-serif; 
+            margin: 0; 
+            padding-bottom: 50px;
         }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 30px;
-            text-align: center;
-        }
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 10px;
-        }
-        .subtitle {
-            color: #7f8c8d;
-            font-size: 14px;
-            margin-top: 0;
+
+        header {
+            background-color: #50C878;
+            color: white;
+            padding: 30px 10px;
             margin-bottom: 30px;
         }
-        .menu-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 30px;
+
+        ul { list-style: none; padding: 0; }
+
+        .tool-link {
+            display: inline-block;
+            width: 250px;
+            background-color: white;
+            padding: 20px;
+            margin: 10px;
+            border-radius: 15px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 24px;
+            transition: 0.1s;
+            user-select: none;
         }
-        .menu-card {
+
+        .btn-counter { color: #28a745; box-shadow: 3px 6px 0 #1e7e34; }
+
+        .btn-game { color: #007bff; box-shadow: 3px 6px 0 #0056b3; }
+
+        .btn-memo { color: #9c27b0; box-shadow: 3px 6px 0 #6a1b9a; }
+
+        .tool-link:active {
+            box-shadow: none;
+            transform: translateY(6px) translateX(3px);
+        }
+
+        .sync-section {
+            max-width: 500px;
+            margin: 40px auto 0;
             background: white;
             padding: 20px;
             border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            text-decoration: none;
-            color: inherit;
-            transition: transform 0.2s, box-shadow 0.2s;
-            cursor: pointer;
-        }
-        .menu-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-        }
-        .menu-title {
-            font-weight: bold;
-            font-size: 16px;
-            color: #2c3e50;
-        }
-        .sync-container {
-            background: white;
-            padding: 20px;
-            border-radius: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 2px solid #ccc;
             text-align: left;
-            margin-top: 20px;
         }
+
         .sync-title {
             font-weight: bold;
-            font-size: 16px;
-            color: #2c3e50;
+            font-size: 18px;
+            color: #333;
             margin-top: 0;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
+
         .sync-desc {
-            font-size: 12px;
+            font-size: 13px;
             color: #666;
             margin-bottom: 15px;
             line-height: 1.4;
         }
+
         .sync-buttons {
             display: flex;
             gap: 10px;
         }
-        .btn {
+
+        .sync-btn {
             flex: 1;
-            padding: 10px;
+            padding: 12px;
             border-radius: 10px;
             border: none;
             font-weight: bold;
@@ -88,63 +89,88 @@
             color: white;
             transition: opacity 0.1s;
         }
-        .btn:active {
+
+        .sync-btn:active {
             opacity: 0.8;
         }
+
         .btn-export { background-color: #9c27b0; }
         .btn-import { background-color: #009688; }
-        
-        .update-list {
+
+        .update-section {
+            max-width: 500px;
+            margin: 40px auto 0; 
             text-align: left;
-            background: #ebeeef;
-            padding: 15px 20px;
+        }
+
+        details {
+            background: #fff;
+            border: 2px solid #ccc;
             border-radius: 10px;
-            font-size: 12px;
-            color: #555;
-            margin-top: 30px;
+            overflow: hidden;
         }
-        .update-title {
+
+        summary {
+            padding: 10px;
+            cursor: pointer;
             font-weight: bold;
-            margin-bottom: 5px;
-            color: #333;
+            background-color: #eee;
+            outline: none;
         }
+
+        .update-content { padding: 10px 20px; font-size: 0.9rem; }
+        .update-content li { margin-bottom: 5px; border-bottom: 1px solid #f0f0f0; }
     </style>
 </head>
 <body>
 
-<div class="container">
+<header>
     <h1>ダンゴムシのミニツールボックス</h1>
-    <p class="subtitle">日常でちょっと使える便利なツールが集まる場所</p>
+    <p>ミニツールやミニゲームが無料で使えます。</p>
+</header>
 
-    <div class="menu-grid">
-        <a href="memo.html" class="menu-card">
-            <div class="menu-title">一言メモ帳</div>
-        </a>
-        <a href="counter.html" class="menu-card">
-            <div class="menu-title">数取機</div>
-        </a>
-        <a href="game.html" class="menu-card">
-            <div class="menu-title">クリックゲーム</div>
-        </a>
+<h2>ミニツール一覧</h2>
+<ul>
+    <li>
+        <a href="counter.html" class="tool-link btn-counter">数取機</a>
+        <a href="memo.html" class="tool-link btn-memo">メモ帳</a>
+    </li>
+</ul>
+
+<h2>ミニゲーム一覧</h2>
+<ul>
+    <li>
+        <a href="click-game.html" class="tool-link btn-game">クリックゲーム</a>
+    </li>
+</ul>
+
+<div class="sync-section">
+    <div class="sync-title">全データ一括同期</div>
+    <div class="sync-desc">
+        「メモ帳の履歴」「ゲームのスコア」など、このツールボックス内のすべてのデータを1つのコードにして、別のスマホやパソコンへ引っ越し（同期）させることができます。
     </div>
+    <div class="sync-buttons">
+        <button class="sync-btn btn-export" onclick="exportAllData()">同期コードを発行</button>
+        <button class="sync-btn btn-import" onclick="importAllData()">同期コードを入力</button>
+    </div>
+</div>
 
-    <div class="sync-container">
-        <div class="sync-title">全データ一括同期</div>
-        <div class="sync-desc">
-            「メモ帳の履歴」「ゲームのスコア」など、このツールボックス内のすべてのデータを1つのコードにして、別のスマホやパソコンへ引っ越し（同期）させることができます。
+<div class="update-section">
+    <details>
+        <summary>アップデート履歴 (最新: v3.0.0、2026.05.16)</summary>
+        <div class="update-content">
+            <ul>
+                <li><strong>v3.0.0</strong>: バックアップ機能追加・メモ帳追加 (2026.05.16)</li>
+                <li><strong>v2.1.2</strong>: 細かなバクの修正 (2026.05.16)</li>
+                <li><strong>v2.1.1</strong>: 細かなバグの修正 (2026.05.14)</li>
+                <li><strong>v2.1.0</strong>: クリックゲームに新機能追加（連続記録機能、履歴保持機能） (2026.05.11)</li>
+                <li><strong>v2.0.0</strong>: サイトのデザインを大幅リニューアル (2026.05.10)</li>
+                <li><strong>v1.2.0</strong>: 数取機を追加 (2026.05.09)</li>
+                <li><strong>v1.1.0</strong>: クリックゲームを追加 (2026.05.07)</li>
+                <li><strong>v1.0.0</strong>: サイトオープン (2026.05.07)</li>
+            </ul>
         </div>
-        <div class="sync-buttons">
-            <button class="btn btn-export" onclick="exportAllData()">同期コードを発行</button>
-            <button class="btn btn-import" onclick="importAllData()">同期コードを入力</button>
-        </div>
-    </div>
-
-    <div class="update-list">
-        <div class="update-title">🛠️ アップデート履歴</div>
-        <div>• v2.3.0: トップ画面に「同期コード」による全データ一括引き継ぎ機能を追加</div>
-        <div>• v1.1.0: メモ帳の複数行入力（改行）に対応</div>
-        <div>• v1.0.0: ミニツールボックスを公開（メモ帳、数取機、ゲームなど）</div>
-    </div>
+    </details>
 </div>
 
 <script>
