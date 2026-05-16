@@ -2,109 +2,229 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="google-site-verification" content="QQ1fzUYohnQGbGYqUjzuv_oJ70cazP0YJX2BmhB9wq4" />
     <title>ダンゴムシのミニツールボックス</title>
     <style>
-        body { 
-            text-align: center; 
-            background-color: #f0f0f0; 
-            font-family: sans-serif; 
-            margin: 0; 
-            padding-bottom: 50px;
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            margin: 0;
+            padding: 0;
         }
-        header {
-            background-color: #50C878;
-            color: white;
-            padding: 30px 10px;
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 30px;
+            text-align: center;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-top: 0;
             margin-bottom: 30px;
         }
-        ul { list-style: none; padding: 0; }
-        .tool-link {
-            display: inline-block;
-            width: 250px;
-            background-color: white;
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .menu-card {
+            background: white;
             padding: 20px;
-            margin: 10px;
             border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             text-decoration: none;
-            font-weight: bold;
-            font-size: 24px;
-            transition: 0.1s;
-            user-select: none;
-        }
-        .btn-counter { color: #28a745; box-shadow: 3px 6px 0 #1e7e34; }
-        .btn-memo { color: #17a2b8; box-shadow: 3px 6px 0 #117a8b; }
-        .btn-game { color: #007bff; box-shadow: 3px 6px 0 #0056b3; }
-        .tool-link:active {
-            box-shadow: none;
-            transform: translateY(6px) translateX(3px);
-        }
-        .update-section {
-            max-width: 500px;
-            margin: 50px auto 0; 
-            text-align: left;
-        }
-        details {
-            background: #fff;
-            border: 2px solid #ccc;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        summary {
-            padding: 10px;
+            color: inherit;
+            transition: transform 0.2s, box-shadow 0.2s;
             cursor: pointer;
-            font-weight: bold;
-            background-color: #eee;
-            outline: none;
         }
-        .update-content { padding: 10px 20px; font-size: 0.9rem; }
-        .update-content li { margin-bottom: 5px; border-bottom: 1px solid #f0f0f0; }
+        .menu-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        }
+        .menu-title {
+            font-weight: bold;
+            font-size: 16px;
+            color: #2c3e50;
+        }
+        .sync-container {
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            text-align: left;
+            margin-top: 20px;
+        }
+        .sync-title {
+            font-weight: bold;
+            font-size: 16px;
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        .sync-desc {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+        .sync-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 10px;
+            border: none;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            color: white;
+            transition: opacity 0.1s;
+        }
+        .btn:active {
+            opacity: 0.8;
+        }
+        .btn-export { background-color: #9c27b0; }
+        .btn-import { background-color: #009688; }
+        
+        .update-list {
+            text-align: left;
+            background: #ebeeef;
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-size: 12px;
+            color: #555;
+            margin-top: 30px;
+        }
+        .update-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
     </style>
 </head>
 <body>
 
-<header>
+<div class="container">
     <h1>ダンゴムシのミニツールボックス</h1>
-    <p>ミニツールやミニゲームが無料で使えます。</p>
-</header>
+    <p class="subtitle">日常でちょっと使える便利なツールが集まる場所</p>
 
-<h2>ミニツール一覧</h2>
-<ul>
-    <li>
-        <a href="counter.html" class="tool-link btn-counter">数取機</a>
-        <p>シンプルで使いやすい。デバイス保存機能付き。</p>
-    </li>
-    <li>
-        <a href="memo.html" class="tool-link btn-memo">メモ帳</a>
-        <p>シンプルなメモ帳。デバイス保存・メモロック機能付き。</p>
-    </li>
-</ul>
+    <div class="menu-grid">
+        <a href="memo.html" class="menu-card">
+            <div class="menu-title">メモ帳</div>
+        </a>
+        <a href="counter.html" class="menu-card">
+            <div class="menu-title">数取機</div>
+        </a>
+        <a href="game.html" class="menu-card">
+            <div class="menu-title">クリックゲーム</div>
+        </a>
+    </div>
 
-<h2>ミニゲーム一覧</h2>
-<ul>
-    <li>
-        <a href="click-game.html" class="tool-link btn-game">クリックゲーム</a>
-        <p>ただただクリックしていくだけのゲーム。連続記録・デバイス保存など多数機能付き。たまに仕掛けがあるかも。</p>
-    </li>
-</ul>
-
-<div class="update-section">
-    <details>
-        <summary>アップデート履歴 (最新: v2.2.0、2026.05.16)</summary>
-        <div class="update-content">
-            <ul>
-                <li><strong>v2.2.0</strong>: メモ帳の追加 (2026.05.16)</li>
-                <li><strong>v2.1.2</strong>: 細かなバクの修正 (2026.05.16)</li>
-                <li><strong>v2.1.1</strong>: 細かなバグの修正 (2026.05.14)</li>
-                <li><strong>v2.1.0</strong>: クリックゲームに新機能追加（連続記録機能、履歴保持機能） (2026.05.11)</li>
-                <li><strong>v2.0.0</strong>: サイトのデザインを大幅リニューアル (2026.05.10)</li>
-                <li><strong>v1.2.0</strong>: 数取機を追加 (2026.05.09)</li>
-                <li><strong>v1.1.0</strong>: クリックゲームを追加 (2026.05.07)</li>
-                <li><strong>v1.0.0</strong>: サイトオープン (2026.05.07)</li>
-            </ul>
+    <div class="sync-container">
+        <div class="sync-title">全データ一括同期</div>
+        <div class="sync-desc">
+            「メモ帳の履歴」「ゲームのスコア」など、このツールボックス内のすべてのデータを1つのコードにして、別のスマホやパソコンへ引っ越し（同期）させることができます。
         </div>
-    </details>
+        <div class="sync-buttons">
+            <button class="btn btn-export" onclick="exportAllData()">同期コードを発行</button>
+            <button class="btn btn-import" onclick="importAllData()">同期コードを入力</button>
+        </div>
+    </div>
+
+    <div class="update-list">
+        <div class="update-title">🛠️ アップデート履歴</div>
+        <div>• v2.3.0: トップ画面に「同期コード」による全データ一括引き継ぎ機能を追加</div>
+        <div>• v1.1.0: メモ帳の複数行入力（改行）に対応</div>
+        <div>• v1.0.0: ミニツールボックスを公開（メモ帳、数取機、ゲーム）</div>
+    </div>
 </div>
 
+<script>
+    // 対象とする3つのアプリのキーだけを厳選
+    const TARGET_KEYS = [
+        'myMemoHistory',
+        'myMemoPasscode',
+        'clickGameHighScore',
+        'counterCountValue'
+    ];
+
+    function exportAllData() {
+        let allData = {};
+        let hasData = false;
+
+        TARGET_KEYS.forEach(key => {
+            let val = localStorage.getItem(key);
+            if (val !== null) {
+                allData[key] = val;
+                hasData = true;
+            }
+        });
+
+        if (!hasData) {
+            alert("同期するデータがまだ何もありません。");
+            return;
+        }
+
+        try {
+            const jsonStr = JSON.stringify(allData);
+            const utf8Bytes = new TextEncoder().encode(jsonStr);
+            let binString = "";
+            utf8Bytes.forEach(b => binString += String.fromCharCode(b));
+            const syncCode = btoa(binString);
+            
+            navigator.clipboard.writeText(syncCode).then(() => {
+                alert("すべてのデータをまとめた「同期コード」をコピーしました。別の端末のトップ画面でこのコードを入力してください。");
+            }).catch(() => {
+                prompt("コピーに失敗しました。以下の同期コードをすべて選択してコピーしてください：", syncCode);
+            });
+        } catch (e) {
+            alert("同期コードの作成に失敗しました。");
+        }
+    }
+
+    function importAllData() {
+        const code = prompt("コピーしておいた「同期コード」をここに貼り付けてください：\n（注意：現在この端末にあるデータは上書きされます）");
+        if (!code || code.trim() === "") return;
+
+        try {
+            const binString = atob(code.trim());
+            const len = binString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binString.charCodeAt(i);
+            }
+            const jsonStr = new TextDecoder().decode(bytes);
+            const importedData = JSON.parse(jsonStr);
+            
+            if (importedData && typeof importedData === 'object' && !Array.isArray(importedData)) {
+                if (!confirm("データを読み込みます。このツールボックス内の既存のデータが上書きされますがよろしいですか？")) {
+                    return;
+                }
+
+                TARGET_KEYS.forEach(key => localStorage.removeItem(key));
+
+                Object.keys(importedData).forEach(key => {
+                    if (TARGET_KEYS.includes(key)) {
+                        localStorage.setItem(key, importedData[key]);
+                    }
+                });
+
+                alert("すべてのデータの同期に成功しました。各アプリを開いて確認してみてください。");
+            } else {
+                alert("同期コードの形式が正しくありません。");
+            }
+        } catch (e) {
+            alert("同期コードの解析に失敗しました。正しいコードを貼り付けてください。");
+        }
+    }
+</script>
 </body>
 </html>
