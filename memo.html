@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>メモ帳 - v1.0.0</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f0f4f8;
+        }
+        .container {
+            position: relative;
+            text-align: center;
+            padding: 30px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .display-container {
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .input-title {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        .input-area {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+        }
+        .emerald-button {
+            display: inline-block;
+            background-color: #50C878;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 16px;
+            box-shadow: 2px 4px 0 #3a965a;
+            cursor: pointer;
+            border: none;
+            transition: 0.1s;
+            user-select: none;
+        }
+        .emerald-button:active {
+            box-shadow: none;
+            transform: translate(2px, 4px);
+        }
+        .memo-list {
+            margin-top: 20px;
+            max-height: 350px;
+            overflow-y: auto;
+        }
+        .memo-item {
+            background: #f9f9f9;
+            border-left: 5px solid #50C878;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 0 8px 8px 0;
+            position: relative;
+            text-align: left;
+        }
+        .memo-time {
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 6px;
+        }
+        .memo-title-display {
+            font-weight: bold;
+            font-size: 15px;
+            color: #222;
+            margin-bottom: 4px;
+        }
+        .memo-text {
+            font-size: 14px;
+            color: #444;
+            word-break: break-all;
+        }
+        .del-btn {
+            position: absolute;
+            right: 10px;
+            top: 12px;
+            background: none;
+            border: none;
+            color: #ff5722;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .small-btn {
+            padding: 8px 15px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            margin: 0 5px;
+            color: white;
+        }
+        .reset-btn { background-color: red; }
+        .home-btn { background-color: #6c757d; }
+        .lock-btn { background-color: #ff9800; }
+        .dl-btn { background-color: #2196F3; font-weight: bold; margin-top: 10px; padding: 10px 20px; width: 100%; border-radius: 10px; }
+        
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(240, 244, 248, 1);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 320px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<div id="lock-screen" class="modal-overlay">
+    <div class="modal-content">
+        <h3 style="margin-top:0; color:#333;">🔒 パスコード保護</h3>
+        <p style="font-size:13px; color:#666;">このメモ帳は保護されています。</p>
+        <input type="password" id="unlock-pass" class="input-title" style="text-align:center; font-size:18px;" placeholder="パスコードを入力">
+        <button type="button" class="emerald-button" style="width:100%; margin-top:10px;" onclick="checkPasscode()">解除する</button>
+    </div>
+</div>
+
+<div class="container">
+    <h1>一言メモ帳</h1>
+    <p style="color:#666; font-size:14px; margin-top:-5px; margin-bottom:15px;">シンプルで使いやすいメモ帳です。パスコードもつけられます。</p>
+    <a>作業中のちょっとした気づきやメモをタイトル・日付付きで残せます。</a>
+    <div style="margin-bottom: 20px; margin-top: 10px;">
+        <button class="small-btn reset-btn" onclick="clearAllMemos()">すべて削除</button>
+        <button class="small-btn lock-btn" onclick="setPasscode()">鍵を設定/解除</button>
+        <button class="small-btn home-btn" onclick="goHome()">ホームに戻る</button>
+    </div>
+
+    <div class="display-container">
+        <input type="text" id="memo-title" class="input-title" placeholder="タイトル（任意）">
+        <input type="text" id="memo-input" class="input-area" placeholder="ここにメモを入力..." onkeydown="handleKeyDown(event)">
+        <div style="text-align: right;">
+            <button type="button" class="emerald-button" onclick="addMemo()">メモを残す</button>
+        </div>
+    </div>
+
+    <div class="display-container">
+        <h3 style="margin-top: 0; color: #333;">📝 メモ履歴</h3>
+        <div id="memo-list-container" class="memo-list"></div>
+        <button class="small-btn dl-btn" onclick="downloadTXT()">メモをテキストファイルで保存する</button>
+    </div>
+</div>
+
+<script>
+    let memoHistory = [];
+
+    window.onload = function() {
+        let savedPass = localStorage.getItem('myMemoPasscode');
+        if (savedPass) {
+            document.getElementById('lock-screen').style.display = 'flex';
+            document.getElementById('unlock-pass').focus();
+            document.getElementById('unlock-pass').onkeydown = function(e) {
+                if (e.key === 'Enter') checkPasscode();
+            };
+        } else {
+            initMemoApp();
+        }
+    };
+
+    function checkPasscode() {
+        let inputPass = document.getElementById('unlock-pass').value;
+        let savedPass = localStorage.getItem('myMemoPasscode');
+        if (inputPass === savedPass) {
+            document.getElementById('lock-screen').style.display = 'none';
+            initMemoApp();
+        } else {
+            alert("パスコードが違います。");
+        }
+    }
+
+    function setPasscode() {
+        let savedPass = localStorage.getItem('myMemoPasscode');
+        if (savedPass) {
+            if (confirm("現在設定されているパスコードを解除しますか？")) {
+                localStorage.removeItem('myMemoPasscode');
+                alert("パスコードを解除しました。");
+            }
+        } else {
+            let newPass = prompt("新しいパスコードを設定してください（空欄のままなら設定しません）：");
+            if (newPass && newPass.trim() !== "") {
+                localStorage.setItem('myMemoPasscode', newPass.trim());
+                alert("パスコードを設定しました！次回起動時からロックされます。");
+            }
+        }
+    }
+
+    function initMemoApp() {
+        let savedMemos = localStorage.getItem('myMemoHistory');
+        memoHistory = savedMemos ? JSON.parse(savedMemos) : [];
+        displayMemos();
+    }
+
+    function handleKeyDown(e) {
+        if (e.key === 'Enter' && !e.isComposing) {
+            addMemo();
+        }
+    }
+
+    function addMemo() {
+        const titleInput = document.getElementById('memo-title');
+        const contentInput = document.getElementById('memo-input');
+        
+        const titleText = titleInput.value.trim();
+        const contentText = contentInput.value.trim();
+        
+        if (contentText === '') return;
+
+        const now = new Date();
+        const dateStr = now.toLocaleDateString();
+        const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        memoHistory.push({ date: dateStr, time: timeStr, title: titleText, content: contentText });
+        localStorage.setItem('myMemoHistory', JSON.stringify(memoHistory));
+        
+        titleInput.value = '';
+        contentInput.value = '';
+        displayMemos();
+    }
+
+    function deleteMemo(index) {
+        memoHistory.splice(index, 1);
+        localStorage.setItem('myMemoHistory', JSON.stringify(memoHistory));
+        displayMemos();
+    }
+
+    function clearAllMemos() {
+        if (confirm("すべてのメモを削除しますか？")) {
+            memoHistory = [];
+            localStorage.removeItem('myMemoHistory');
+            displayMemos();
+        }
+    }
+
+    function displayMemos() {
+        const container = document.getElementById('memo-list-container');
+        container.innerHTML = '';
+
+        if (memoHistory.length === 0) {
+            container.innerHTML = '<p style="color:#888; text-align:center; font-size:14px;">メモがありません</p>';
+            return;
+        }
+
+        for (let i = memoHistory.length - 1; i >= 0; i--) {
+            const item = memoHistory[i];
+            const div = document.createElement('div');
+            div.className = 'memo-item';
+            
+            let titleHtml = item.title ? `<div class="memo-title-display">■ ${escapeHtml(item.title)}</div>` : '';
+            
+            div.innerHTML = `
+                <div class="memo-time">${item.date} ${item.time}</div>
+                ${titleHtml}
+                <div class="memo-text">${escapeHtml(item.content)}</div>
+                <button class="del-btn" onclick="deleteMemo(${i})">削除</button>
+            `;
+            container.appendChild(div);
+        }
+    }
+
+    function downloadTXT() {
+        if (memoHistory.length === 0) {
+            alert("保存するメモがありません。");
+            return;
+        }
+        let textContent = "";
+        memoHistory.forEach(item => {
+            textContent += `----------------------------------------\n`;
+            textContent += `日時：${item.date} ${item.time}\n`;
+            if (item.title) {
+                textContent += `題名：${item.title}\n`;
+            }
+            textContent += `内容：${item.content}\n`;
+        });
+        textContent += `----------------------------------------\n`;
+
+        const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", "memo_history.txt");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    function goHome() {
+        location.href = "index.html";
+    }
+
+    function escapeHtml(str) {
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+</script>
+</body>
+</html>
