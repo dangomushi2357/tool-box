@@ -150,20 +150,20 @@
 </ul>
 
 <div class="sync-section">
-    <div class="sync-title">全データ一括同期（オートQRコード対応版）</div>
+    <div class="sync-title">全データ一括同期（QRコード連携対応）</div>
     <div class="sync-desc">
-        データをコード化し、このサイトを開く特製QRコードを表示します。別のデバイスのカメラで読み取るだけで、自動的にすべてのデータが引っ越し（同期）されます。
+        現在の利用データをコード化し、専用のQRコードを生成します。別のデバイスのカメラで読み取るか、同期コードを直接入力することで、簡単にデータの移行・復元が行えます。
     </div>
     <div class="sync-buttons">
-        <button class="sync-btn btn-export" onclick="exportAllData()">同期QRを発行</button>
+        <button class="sync-btn btn-export" onclick="exportAllData()">同期QRコードを発行</button>
         <button class="sync-btn btn-import" onclick="importAllData()">同期コードを入力</button>
     </div>
 </div>
 
 <div id="qr-screen" class="qr-modal">
     <div class="qr-content">
-        <h3 style="margin: 0 0 10px 0; color:#333;">📱 同期用QRコード</h3>
-        <p style="font-size:12px; color:#666; margin:0;">別の端末のカメラでこのQRコードをスキャンしてください。自動的にサイトが開き、データが同期されます。</p>
+        <h3 style="margin: 0 0 10px 0; color:#333;">📱 データ同期用QRコード</h3>
+        <p style="font-size:12px; color:#666; margin:0;">別のデバイスのカメラでこのQRコードをスキャンしてください。自動的に本サイトが開き、データの同期処理が開始されます。</p>
         <div id="qrcode"></div>
         <button class="sync-btn btn-import" style="width:100%;" onclick="closeQR()">閉じる</button>
     </div>
@@ -174,7 +174,7 @@
         <summary>アップデート履歴 (最新: v3.2.0、2026.05.16)</summary>
         <div class="update-content">
             <ul>
-                <li><strong>v3.2.0</strong>: カメラでかざすだけのオート同期QRコード機能を追加 (2026.05.16)</li>
+                <li><strong>v3.2.0</strong>: QRコードスキャンによる自動データ同期機能を追加 (2026.05.16)</li>
                 <li><strong>v3.1.0</strong>: 同期用QRコード表示機能を追加 (2026.05.16)</li>
                 <li><strong>v3.0.0</strong>: バックアップ機能追加・メモ帳追加 (2026.05.16)</li>
                 <li><strong>v2.1.2</strong>: 細かなバグの修正 (2026.05.16)</li>
@@ -225,7 +225,7 @@
         });
 
         if (!hasData) {
-            alert("同期するデータがまだ何もありません。");
+            alert("同期対象のデータが存在しません。");
             return;
         }
 
@@ -251,7 +251,7 @@
             navigator.clipboard.writeText(syncCode).catch(() => {});
 
         } catch (e) {
-            alert("同期コードの作成に失敗しました。データが大きすぎる可能性があります。");
+            alert("同期コードの生成に失敗しました。データ容量が大きすぎる可能性があります。");
         }
     }
 
@@ -260,7 +260,7 @@
     }
 
     function importAllData() {
-        const code = prompt("貼り付け用の「同期コード」を持っている場合は、ここに貼り付けてください：\n（注意：現在この端末にあるデータは上書きされます）");
+        const code = prompt("取得済みの「同期コード」がある場合は、ここに貼り付けてください：\n（注意：現在このデバイスにあるデータは上書きされます）");
         if (!code || code.trim() === "") return;
         processImport(code.trim(), false);
     }
@@ -278,8 +278,8 @@
             
             if (importedData && typeof importedData === 'object' && !Array.isArray(importedData)) {
                 const msg = isAuto 
-                    ? "QRコードから同期データを検出しました！\nこの端末の既存のデータを上書きして、データを復元しますか？"
-                    : "データを読み込みます。既存のデータが上書きされますがよろしいですか？";
+                    ? "QRコードから同期データを検出しました。\nこのデバイスの既存のデータを上書きし、データを復元しますか？"
+                    : "データのインポートを実行します。既存のデータが上書きされますが、よろしいですか？";
 
                 if (!confirm(msg)) return;
 
@@ -291,13 +291,13 @@
                     }
                 });
 
-                alert("すべてのデータの同期（復元）に成功しました！");
+                alert("すべてのデータの同期が完了しました。各アプリケーションをご確認ください。");
                 location.reload();
             } else {
                 alert("同期データの形式が正しくありません。");
             }
         } catch (e) {
-            alert("同期データの解析に失敗しました。URLが途中で切れているか、コードが間違っています。");
+            alert("同期データの解析に失敗しました。URLが破損しているか、コードが不正確な可能性があります。");
         }
     }
 </script>
