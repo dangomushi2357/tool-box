@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="google-site-verification" content="QQ1fzUYohnQGbGYqUjzuv_oJ70cazP0YJX2BmhB9wq4" />
     <title>ダンゴムシのミニツールボックス</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-
         body { 
             text-align: center; 
             background-color: #f0f0f0; 
@@ -13,16 +13,13 @@
             margin: 0; 
             padding-bottom: 50px;
         }
-
         header {
             background-color: #50C878;
             color: white;
             padding: 30px 10px;
             margin-bottom: 30px;
         }
-
         ul { list-style: none; padding: 0; }
-
         .tool-link {
             display: inline-block;
             width: 250px;
@@ -36,18 +33,13 @@
             transition: 0.1s;
             user-select: none;
         }
-
         .btn-counter { color: #28a745; box-shadow: 3px 6px 0 #1e7e34; }
-
         .btn-game { color: #007bff; box-shadow: 3px 6px 0 #0056b3; }
-
         .btn-memo { color: #9c27b0; box-shadow: 3px 6px 0 #6a1b9a; }
-
         .tool-link:active {
             box-shadow: none;
             transform: translateY(6px) translateX(3px);
         }
-
         .sync-section {
             max-width: 500px;
             margin: 40px auto 0;
@@ -57,7 +49,6 @@
             border: 2px solid #ccc;
             text-align: left;
         }
-
         .sync-title {
             font-weight: bold;
             font-size: 18px;
@@ -65,19 +56,16 @@
             margin-top: 0;
             margin-bottom: 8px;
         }
-
         .sync-desc {
             font-size: 13px;
             color: #666;
             margin-bottom: 15px;
             line-height: 1.4;
         }
-
         .sync-buttons {
             display: flex;
             gap: 10px;
         }
-
         .sync-btn {
             flex: 1;
             padding: 12px;
@@ -89,27 +77,46 @@
             color: white;
             transition: opacity 0.1s;
         }
-
-        .sync-btn:active {
-            opacity: 0.8;
-        }
-
+        .sync-btn:active { opacity: 0.8; }
         .btn-export { background-color: #9c27b0; }
         .btn-import { background-color: #009688; }
+
+        /* 💡QRコードを表示するためのポップアップ（モーダル）の見た目 */
+        .qr-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        .qr-content {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 300px;
+            width: 90%;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        #qrcode {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
 
         .update-section {
             max-width: 500px;
             margin: 40px auto 0; 
             text-align: left;
         }
-
         details {
             background: #fff;
             border: 2px solid #ccc;
             border-radius: 10px;
             overflow: hidden;
         }
-
         summary {
             padding: 10px;
             cursor: pointer;
@@ -117,7 +124,6 @@
             background-color: #eee;
             outline: none;
         }
-
         .update-content { padding: 10px 20px; font-size: 0.9rem; }
         .update-content li { margin-bottom: 5px; border-bottom: 1px solid #f0f0f0; }
     </style>
@@ -145,25 +151,35 @@
 </ul>
 
 <div class="sync-section">
-    <div class="sync-title">全データ一括同期</div>
+    <div class="sync-title">全データ一括同期（QRコード対応版）</div>
     <div class="sync-desc">
-        「メモ帳の履歴」「ゲームのスコア」など、このツールボックス内のすべてのデータを1つのコードにして、別のスマホやパソコンへ引っ越し（同期）させることができます。
+        データをコード化し、画面にQRコードを表示します。別のデバイスのカメラで読み取るか、コードを入力することで簡単に引っ越しができます。
     </div>
     <div class="sync-buttons">
-        <button class="sync-btn btn-export" onclick="exportAllData()">同期コードを発行</button>
+        <button class="sync-btn btn-export" onclick="exportAllData()">同期QRを発行</button>
         <button class="sync-btn btn-import" onclick="importAllData()">同期コードを入力</button>
+    </div>
+</div>
+
+<div id="qr-screen" class="qr-modal">
+    <div class="qr-content">
+        <h3 style="margin: 0 0 10px 0; color:#333;">📱 同期用QRコード</h3>
+        <p style="font-size:12px; color:#666; margin:0;">別の端末のカメラでこのQRコードをスキャンして、出てきた文字をコピーしてください。</p>
+        <div id="qrcode"></div>
+        <button class="sync-btn btn-import" style="width:100%;" onclick="closeQR()">閉じる</button>
     </div>
 </div>
 
 <div class="update-section">
     <details>
-        <summary>アップデート履歴 (最新: v3.0.0、2026.05.16)</summary>
+        <summary>アップデート履歴 (最新: v3.1.0、2026.05.16)</summary>
         <div class="update-content">
             <ul>
+                <li><strong>v3.1.0</strong>: 同期用QRコード表示機能を追加 (2026.05.16)</li>
                 <li><strong>v3.0.0</strong>: バックアップ機能追加・メモ帳追加 (2026.05.16)</li>
-                <li><strong>v2.1.2</strong>: 細かなバクの修正 (2026.05.16)</li>
+                <li><strong>v2.1.2</strong>: 細かなバグの修正 (2026.05.16)</li>
                 <li><strong>v2.1.1</strong>: 細かなバグの修正 (2026.05.14)</li>
-                <li><strong>v2.1.0</strong>: クリックゲームに新機能追加（連続記録機能、履歴保持機能） (2026.05.11)</li>
+                <li><strong>v2.1.0</strong>: クリックゲームに新機能追加 (2026.05.11)</li>
                 <li><strong>v2.0.0</strong>: サイトのデザインを大幅リニューアル (2026.05.10)</li>
                 <li><strong>v1.2.0</strong>: 数取機を追加 (2026.05.09)</li>
                 <li><strong>v1.1.0</strong>: クリックゲームを追加 (2026.05.07)</li>
@@ -209,18 +225,29 @@
             utf8Bytes.forEach(b => binString += String.fromCharCode(b));
             const syncCode = btoa(binString);
             
-            navigator.clipboard.writeText(syncCode).then(() => {
-                alert("すべてのデータをまとめた「同期コード」をコピーしました。別の端末のトップ画面でこのコードを入力してください。");
-            }).catch(() => {
-                prompt("コピーに失敗しました。以下の同期コードをすべて選択してコピーしてください：", syncCode);
+            document.getElementById('qrcode').innerHTML = "";
+            
+            new QRCode(document.getElementById("qrcode"), {
+                text: syncCode,
+                width: 200,
+                height: 200
             });
+
+            document.getElementById('qr-screen').style.display = 'flex';
+
+            navigator.clipboard.writeText(syncCode).catch(() => {});
+
         } catch (e) {
-            alert("同期コードの作成に失敗しました。");
+            alert("同期コードの作成に失敗しました。データが大きすぎる可能性があります。");
         }
     }
 
+    function closeQR() {
+        document.getElementById('qr-screen').style.display = 'none';
+    }
+
     function importAllData() {
-        const code = prompt("コピーしておいた「同期コード」をここに貼り付けてください：\n（注意：現在この端末にあるデータは上書きされます）");
+        const code = prompt("スキャンした「同期コード」をここに貼り付けてください：\n（注意：現在この端末にあるデータは上書きされます）");
         if (!code || code.trim() === "") return;
 
         try {
@@ -234,7 +261,7 @@
             const importedData = JSON.parse(jsonStr);
             
             if (importedData && typeof importedData === 'object' && !Array.isArray(importedData)) {
-                if (!confirm("データを読み込みます。このツールボックス内の既存のデータが上書きされますがよろしいですか？")) {
+                if (!confirm("データを読み込みます。既存のデータが上書きされますがよろしいですか？")) {
                     return;
                 }
 
@@ -246,12 +273,12 @@
                     }
                 });
 
-                alert("すべてのデータの同期に成功しました。各アプリを開いて確認してみてください。");
+                alert("すべてのデータの同期に成功しました！");
             } else {
                 alert("同期コードの形式が正しくありません。");
             }
         } catch (e) {
-            alert("同期コードの解析に失敗しました。正しいコードを貼り付けてください。");
+            alert("同期コードの解析に失敗しました。正しいコードを入力してください。");
         }
     }
 </script>
