@@ -163,7 +163,11 @@
 <div id="qr-screen" class="qr-modal">
     <div class="qr-content">
         <h3 style="margin: 0 0 10px 0; color:#333;">📱 データ同期用QRコード</h3>
-        <p style="font-size:12px; color:#666; margin:0;">別のデバイスのカメラでこのQRコードをスキャンしてください。自動的に本サイトが開き、データの同期処理が開始されます。</p>
+        <p style="font-size:12px; color:#666; margin:0; text-align:left; line-height:1.5;">
+            別のデバイスのカメラでこのQRコードをスキャンしてください。自動的に本サイトが開き、データの同期処理が開始されます。
+            <br><br>
+            ※クリップボードにも同期コードが保存されています。同じデバイスの別ブラウザで同期する場合は、この画面を閉じ、「同期コードを入力」ボタンから貼り付けてください。
+        </p>
         <div id="qrcode"></div>
         <button class="sync-btn btn-import" style="width:100%;" onclick="closeQR()">閉じる</button>
     </div>
