@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>メモ帳 - v1.0.0</title>
+    <title>メモ帳 - v1.1.0</title>
     <style>
         body {
             font-family: 'Helvetica Neue', Arial, sans-serif;
@@ -39,7 +39,16 @@
             border: 1px solid #ccc;
             font-size: 16px;
             box-sizing: border-box;
+            margin-bottom: 5px;
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+        }
+        .input-hint {
+            font-size: 11px;
+            color: #888;
             margin-bottom: 15px;
+            text-align: left;
         }
         .emerald-button {
             display: inline-block;
@@ -88,6 +97,7 @@
             font-size: 14px;
             color: #444;
             word-break: break-all;
+            white-space: pre-wrap;
         }
         .del-btn {
             position: absolute;
@@ -145,9 +155,9 @@
 </div>
 
 <div class="container">
-    <h1>一言メモ帳</h1>
+    <h1>メモ帳</h1>
     <p style="color:#666; font-size:14px; margin-top:-5px; margin-bottom:15px;">シンプルで使いやすいメモ帳です。パスコードもつけられます。</p>
-    <a>作業中のちょっとした気づきやメモをタイトル・日付付きで残せます。</a>
+    <p style="color:#444; font-size:16px;">作業中のちょっとした気づきやメモをタイトル・日付付きで残せます。</p>
     <div style="margin-bottom: 20px; margin-top: 10px;">
         <button class="small-btn reset-btn" onclick="clearAllMemos()">すべて削除</button>
         <button class="small-btn lock-btn" onclick="setPasscode()">鍵を設定/解除</button>
@@ -156,7 +166,8 @@
 
     <div class="display-container">
         <input type="text" id="memo-title" class="input-title" placeholder="タイトル（任意）">
-        <input type="text" id="memo-input" class="input-area" placeholder="ここにメモを入力..." onkeydown="handleKeyDown(event)">
+        <textarea id="memo-input" class="input-area" placeholder="ここにメモを入力..." onkeydown="handleKeyDown(event)"></textarea>
+        <div class="input-hint">※Ctrl + Enter (Cmd + Enter) で素早くメモを残せます</div>
         <div style="text-align: right;">
             <button type="button" class="emerald-button" onclick="addMemo()">メモを残す</button>
         </div>
@@ -219,7 +230,7 @@
     }
 
     function handleKeyDown(e) {
-        if (e.key === 'Enter' && !e.isComposing) {
+        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) && !e.isComposing) {
             addMemo();
         }
     }
