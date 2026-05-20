@@ -19,6 +19,25 @@
             padding: 30px 10px;
             margin-bottom: 30px;
         }
+        .title-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            max-width: 90%;
+            margin: 0 auto;
+        }
+        .main-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: white;
+            margin: 0;
+        }
+        .dango-icon {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+        }
         ul { list-style: none; padding: 0; }
         .tool-link {
             display: inline-block;
@@ -125,12 +144,29 @@
         }
         .update-content { padding: 10px 20px; font-size: 0.9rem; }
         .update-content li { margin-bottom: 5px; border-bottom: 1px solid #f0f0f0; }
+
+        @media (max-width: 600px) {
+            .title-container {
+                gap: 8px;
+            }
+            .main-title {
+                font-size: 1.6rem;
+            }
+            .dango-icon {
+                width: 40px;
+                height: 40px;
+            }
+        }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>ダンゴムシのミニツールボックス</h1>
+    <div class="title-container">
+        <img src="dango_1(default).png" alt="ダンゴムシ（普通）" class="dango-icon">
+        <h1 class="main-title">ダンゴムシのミニツールボックス</h1>
+        <img src="dango_2(smile).png" alt="ダンゴムシ（にっこり）" class="dango-icon">
+    </div>
     <p>ミニツールやミニゲームが無料で使えます。</p>
 </header>
 
@@ -175,9 +211,10 @@
 
 <div class="update-section">
     <details>
-        <summary>アップデート履歴 (最新: v3.3.0、2026.05.20)</summary>
+        <summary>アップデート履歴 (最新: v4.0.0、2026.05.20)</summary>
         <div class="update-content">
             <ul>
+                <li><strong>v4.0.0</strong>: ダンゴムシのイラストをホームに追加 (2026.05.20)</li>
                 <li><strong>v3.3.0</strong>: クリックゲームの隠しボタンレイアウト変更 (2026.05.20)</li>
                 <li><strong>v3.2.0</strong>: QRコードスキャンによる自動データ同期機能を追加 (2026.05.16)</li>
                 <li><strong>v3.1.0</strong>: 同期用QRコード表示機能を追加 (2026.05.16)</li>
