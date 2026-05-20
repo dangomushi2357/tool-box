@@ -137,15 +137,23 @@
         #secret-btn {
             display: none;
             position: absolute;
-            right: 0; 
-            bottom: 0; 
-            width: 10px;
-            height: 10px;
+            right: 10px; 
+            bottom: 10px; 
+            width: 50px;
+            height: 50px;
+            background-image: url('dango_1(default).png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
             background-color: transparent;
-            border: 1px solid rgba(0,0,0,0.05); 
+            border: none; 
             color: transparent; 
             cursor: pointer;
             z-index: 10;
+            transition: transform 0.1s;
+        }
+        #secret-btn:active {
+            transform: scale(0.9);
         }
     </style>
 </head>
@@ -169,8 +177,7 @@
     <div class="stats-box">
         <h3>🔥 連続記録: <span id="streak-count">0</span>日</h3>
         <div id="graph-container"></div>
-        <p style="font-size: 12px;">直近7日間の最高スコア</p>
-    </div>
+        <p style="font-size: 12px;">直近7日間の最高スコア</p>    </div>
     <div class="details-container">
         <details>
             <summary style="cursor: pointer; color: #50C878; font-weight: bold; margin-bottom:10px;">📊 全履歴を表示</summary>
@@ -181,7 +188,7 @@
     </div>
     <br>
     <button id="rainbow-toggle-btn" class="small-btn home-btn" style="display:none;" onclick="toggleRainbow()">🌈 背景の虹色をON/OFFする</button>
-    <button id="secret-btn" onclick="secretPower()">？</button>
+    <button id="secret-btn" onclick="secretPower()"></button>
 </div>
 <div id="tooltip" class="custom-tooltip"></div>
 
@@ -274,14 +281,12 @@
         const todayStr = new Date().toLocaleDateString();
         const lastDate = localStorage.getItem('last_play_date');
         let streak = parseInt(localStorage.getItem('click_streak') || "0");
-        
         let savedTodayCount = localStorage.getItem('todaySessionCount');
         if (lastDate === todayStr) {
             todaySessionCount = savedTodayCount ? parseInt(savedTodayCount) : 0;
         } else {
             todaySessionCount = 0;
             localStorage.setItem('todaySessionCount', "0");
-            
             if (lastDate) {
                 const today = new Date();
                 const last = new Date(lastDate);
@@ -293,7 +298,6 @@
                 }
             }
         }
-        
         document.getElementById('streak-count').innerText = streak;
         displayGraph();
     }
@@ -334,7 +338,7 @@
         container.innerHTML = '';
         historyList.innerHTML = '';
 
-        let recentHistory = history.slice(-7); 
+        let recentHistory = history.slice(-7);
         while (recentHistory.length < 7) {
             recentHistory.unshift({ date: "", score: -1 });
         }
@@ -346,7 +350,6 @@
         recentHistory.forEach(data => {
             const column = document.createElement('div');
             column.style.cssText = "display:flex; flex-direction:column; align-items:center; gap:5px;";
-            
             if (data.score === -1) {
                 column.style.width = "25px";
                 container.appendChild(column);
