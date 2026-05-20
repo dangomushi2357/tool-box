@@ -14,29 +14,35 @@
             padding-bottom: 50px;
         }
         header {
-            background-color: #50C878;
-            color: white;
-            padding: 30px 10px;
+            background-color: #ffffff;
+            color: #50C878;
+            padding: 40px 10px 20px 10px;
             margin-bottom: 30px;
+            border-bottom: 1px solid #e0e0e0;
         }
         .title-container {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 15px;
+            gap: 20px;
             max-width: 90%;
             margin: 0 auto;
         }
         .main-title {
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             font-weight: bold;
-            color: white;
+            color: #50C878;
             margin: 0;
         }
         .dango-icon {
-            width: 100px;
-            height: 100px;
+            width: 150px;
+            height: 150px;
             object-fit: contain;
+        }
+        header p {
+            color: #666666;
+            margin-top: 15px;
+            font-size: 1.1rem;
         }
         ul { list-style: none; padding: 0; }
         .tool-link {
@@ -147,14 +153,15 @@
 
         @media (max-width: 600px) {
             .title-container {
-                gap: 8px;
+                flex-direction: column;
+                gap: 10px;
             }
             .main-title {
-                font-size: 1.6rem;
+                font-size: 1.8rem;
             }
             .dango-icon {
-                width: 40px;
-                height: 40px;
+                width: 100px;
+                height: 100px;
             }
         }
     </style>
