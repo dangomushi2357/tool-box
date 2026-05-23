@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日付素数チェッカー</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+        h1 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .date-display {
+            text-align: center;
+            color: #666;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .output-section {
+            margin-top: 30px;
+        }
+        h3 {
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 5px;
+            font-size: 16px;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #e9ecef;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>タイムスタンプ素数チェッカー</h1>
+    <div id="todayDate" class="date-display"></div>
+
+    <label for="limitInput">取得する素数の個数（空欄で全件出力）</label>
+    <input type="number" id="limitInput" min="1" placeholder="例: 30">
+    <button onclick="findPrimes()">素数を探索する</button>
+
+    <div class="output-section">
+        <h3>=== 出力1：配列形式 ===</h3>
+        <pre id="arrayOutput">ボタンを押すと結果が表示されます</pre>
+
+        <h3>=== 出力2：CSV形式 ===</h3>
+        <pre id="csvOutput">ボタンを押すと結果が表示されます</pre>
+    </div>
+</div>
+
+<script>
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const dd = String(now.getUTCDate()).padStart(2, '0');
+    const todayStr = `${yyyy}${mm}${dd}`;
+    const formattedDate = `${yyyy}/${mm}/${dd}`;
+
+    document.getElementById('todayDate').innerText = `本日の日付は ${todayStr} です`;
+
+    function isPrime(n) {
+        if (n < 2) return false;
+        if (n === 2) return true;
+        if (n % 2 === 0) return false;
+        for (let i = 3; i <= Math.sqrt(n); i += 2) {
+            if (n % i === 0) return false;
+        }
+        return true;
+    }
+
+    function findPrimes() {
+        const base = parseInt(todayStr + "0000");
+        const userInput = document.getElementById('limitInput').value.trim();
+        const limit = userInput !== "" ? parseInt(userInput) : null;
+
+        let primes = [];
+
+        for (let hour = 0; hour < 24; hour++) {
+            for (let minute = 0; minute < 60; minute++) {
+                let offset = hour * 100 + minute;
+                if (offset % 2 === 0) continue;
+
+                let currentNum = base + offset;
+                if (isPrime(currentNum)) {
+                    primes.push({
+                        prime: currentNum,
+                        h: hour,
+                        m: minute
+                    });
+
+                    if (limit !== null && primes.length === limit) {
+                        break;
+                    }
+                }
+            }
+            if (limit !== null && primes.length === limit) {
+                break;
+            }
+        }
+
+        const rawPrimeList = primes.map(item => item.prime);
+        document.getElementById('arrayOutput').innerText = JSON.stringify(rawPrimeList);
+
+        let csvText = "日付,時刻,12桁の素数\n";
+        primes.forEach(item => {
+            let timeStr = String(item.h).padStart(2, '0') + ":" + String(item.m).padStart(2, '0');
+            csvText += `${formattedDate},${timeStr},${item.prime}\n`;
+        });
+        document.getElementById('csvOutput').innerText = csvText;
+    }
+</script>
+
+</body>
+</html>
