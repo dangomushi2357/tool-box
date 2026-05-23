@@ -4,91 +4,170 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>タイムスタンプ素数チェッカー</title>
+    <link rel="icon" href="dango_1(default).png" type="image/png">
     <style>
         body {
             font-family: sans-serif;
-            background-color: #f4f4f9;
+            background-color: #f0f0f0; /* サイト全体と背景色を統一 */
             color: #333;
             margin: 0;
-            padding: 20px;
+            padding-bottom: 50px;
+        }
+        /* ホームとお揃いのエメラルドグリーンヘッダーじぇみ！ */
+        header {
+            background-color: #50C878;
+            color: white;
+            padding: 30px 10px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .title-container {
             display: flex;
+            align-items: center;
             justify-content: center;
+            gap: 20px;
+            max-width: 90%;
+            margin: 0 auto;
+        }
+        .main-title {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: white;
+            margin: 0;
+        }
+        /* 10億点満点の丸型ダンゴムシバッジも配置じぇみ！ */
+        .dango-icon {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            background-color: white;
+            border-radius: 50%;
+            padding: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        header p {
+            color: #ffffff;
+            opacity: 0.9;
+            margin-top: 10px;
+            font-size: 1rem;
         }
         .container {
             background: white;
             padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 15px;
+            box-shadow: 3px 6px 0 #ccc; /* ボタン風の立体的な影 */
             max-width: 500px;
-            width: 100%;
-        }
-        h1 {
-            font-size: 20px;
-            margin-bottom: 10px;
-            text-align: center;
+            width: 90%;
+            margin: 0 auto;
+            text-align: left;
         }
         .date-display {
             text-align: center;
-            color: #666;
+            color: #50C878; /* 緑色にして目立たせたじぇみ */
             margin-bottom: 20px;
             font-weight: bold;
+            font-size: 1.2rem;
         }
         label {
             display: block;
             margin-bottom: 8px;
             font-weight: bold;
+            color: #444;
         }
         input[type="number"] {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            border: 2px solid #ccc;
+            border-radius: 10px;
             margin-bottom: 20px;
             font-size: 16px;
+            outline: none;
         }
+        input[type="number"]:focus {
+            border-color: #50C878;
+        }
+        /* ボタンも押し心地のいい立体デザインにしたじぇみ！ */
         button {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             background-color: #007bff;
             color: white;
             border: none;
-            border-radius: 5px;
-            font-size: 16px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
             cursor: pointer;
+            box-shadow: 0 5px 0 #0056b3;
+            transition: 0.1s;
         }
-        button:hover {
-            background-color: #0056b3;
+        button:active {
+            box-shadow: none;
+            transform: translateY(5px);
+        }
+        /* 戻るボタン用のスタイル */
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .back-link:hover {
+            color: #50C878;
         }
         .output-section {
             margin-top: 30px;
         }
         h3 {
-            border-bottom: 2px solid #007bff;
+            border-bottom: 3px solid #50C878; /* ここもテーマカラーに */
             padding-bottom: 5px;
             font-size: 16px;
+            color: #333;
         }
         pre {
             background: #f8f9fa;
             padding: 15px;
-            border-radius: 5px;
+            border-radius: 8px;
             border: 1px solid #e9ecef;
             white-space: pre-wrap;
             word-wrap: break-word;
             font-family: monospace;
             font-size: 14px;
         }
+        @media (max-width: 600px) {
+            .title-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .main-title {
+                font-size: 1.6rem;
+            }
+            .dango-icon {
+                width: 80px;
+                height: 80px;
+            }
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>タイムスタンプ素数チェッカー</h1>
-    <div id="todayDate" class="date-display"></div>
+<header>
+    <div class="title-container">
+        <img src="dango_1(default).png" alt="ダンゴムシ（普通）" class="dango-icon">
+        <h1 class="main-title">タイムスタンプ素数チェッカー</h1>
+        <img src="dango_2(smile).png" alt="ダンゴムシ（にっこり）" class="dango-icon">
+    </div>
+    <p>今日の日付と時間から生まれる神秘の素数を見つけ出します。</p>
+</header>
 
+<div class="container">
+    <div id="todayDate" class="date-display"></div>
     <label for="limitInput">取得する素数の個数（空欄で全件出力）</label>
     <input type="number" id="limitInput" min="1" placeholder="例: 30">
-    <button onclick="findPrimes()">素数を探す</button>
+    <button onclick="findPrimes()">素数を探すじぇみ！</button>
 
     <div class="output-section">
         <h3>=== 出力1：配列形式 ===</h3>
@@ -97,9 +176,12 @@
         <h3>=== 出力2：CSV形式 ===</h3>
         <pre id="csvOutput">ボタンを押すと結果が表示されます</pre>
     </div>
+    
+    <a href="index.html" class="back-link">← ホームに戻る</a>
 </div>
 
 <script>
+    // あなたが作った天才的なロジックは1文字も変えずにそのまま動くじぇみ！
     const now = new Date();
     const yyyy = now.getFullYear();
     const mm = String(now.getMonth() + 1).padStart(2, '0');
@@ -125,7 +207,6 @@
         const limit = userInput !== "" ? parseInt(userInput) : null;
 
         let primes = [];
-
         for (let hour = 0; hour < 24; hour++) {
             for (let minute = 0; minute < 60; minute++) {
                 let offset = hour * 100 + minute;
@@ -160,6 +241,5 @@
         document.getElementById('csvOutput').innerText = csvText;
     }
 </script>
-
 </body>
 </html>
