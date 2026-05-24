@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>クリックゲーム - v4.1.0</title>
+    <title>クリックゲーム - v5.2.1</title>
     <link rel="icon" href="dango_1(default).png" type="image/png">
     <style>
         body {
@@ -124,7 +124,6 @@
             justify-content: center;
             overflow-x: auto;
         }
-        /* === ⚡ 変更点：グラフが滑らかに動くように transition を最適化 === */
         .graph-bar {
             cursor: pointer;
             transition: opacity 0.2s, height 0.1s ease-out, background-color 0.3s;
@@ -152,6 +151,16 @@
         }
         .history-table th { background-color: #f2f2f2; }
         .details-container { margin-top: 20px; }
+        /* === 🛠️ 追加したメッセージのスタイル === */
+        .notice-msg {
+            font-size: 12px;
+            color: #666;
+            background-color: #eef2f5;
+            padding: 8px 12px;
+            border-radius: 8px;
+            display: inline-block;
+            margin: 10px 0;
+        }
         .small-btn {
             padding: 8px 15px;
             border-radius: 8px;
@@ -163,7 +172,7 @@
         }
         .reset-btn { background-color: red; }
         .home-btn { background-color: #6c757d; }
-        .dl-btn { background-color: #2196F3; font-weight: bold; margin-top: 10px; padding: 10px 20px; }
+        .dl-btn { background-color: #2196F3; font-weight: bold; margin-top: 5px; padding: 10px 20px; }
         @keyframes rainbow-bg {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
@@ -242,8 +251,13 @@
     <div class="details-container">
         <details>
             <summary style="cursor: pointer; color: #50C878; font-weight: bold; margin-bottom:10px;">📊 全履歴を表示</summary>
-            <p>履歴の反映に時間がかかる場合があります。ページを再読み込みしてみて下さい。</p>
             <p>履歴は1年ごとにリセットされます。保存したい場合は下のボタンを押してください</p>
+            
+            <div class="notice-msg">
+                <p style="margin:0;">履歴の反映に時間がかかる場合があります。ページを再読み込みしてみてください。</p>
+            </div>
+            <br>
+            
             <button class="small-btn dl-btn" onclick="downloadCSV()">履歴をCSVで保存する</button>
             <div id="full-history-list"></div>
         </details>
@@ -278,7 +292,6 @@
         
         updateDisplay();
 
-        // === 🛠️ 変更点：保存と同時に、DOMを丸ごと作り直さずに「今の棒の高さだけ」をピンポイントで更新する ===
         saveScoreAndRefreshGraph(todaySessionCount);
 
         if (todaySessionCount === 100) {
@@ -345,6 +358,7 @@
         }
     });
 
+    // タイポ修正 (背景的虹色 -> 背景の虹色)
     function toggleRainbow() { document.body.classList.toggle('rainbow-active'); }
     function goHome() { location.href = "index.html"; }
 
@@ -373,7 +387,6 @@
         }
         document.getElementById('streak-count').innerText = streak;
         
-        // 初回読み込み時は全体をビルド
         buildGraphFull();
     }
 
@@ -384,11 +397,9 @@
         document.getElementById('streak-count').innerText = streak;
         alert("100回達成！連続記録更新！");
         
-        // 100回達成時は色が変わる可能性があるのでフル再描画
         buildGraphFull();
     }
 
-    // === 🛠️ 変更点：リアルタイムでデータを保存し、今日の棒だけを動かす関数 ===
     function saveScoreAndRefreshGraph(score) {
         const todayStr = new Date().toLocaleDateString();
         let history = JSON.parse(localStorage.getItem('click_history') || "[]");
@@ -401,28 +412,21 @@
         if (history.length > 365) history.shift();
         localStorage.setItem('click_history', JSON.stringify(history));
 
-        // 🚀 今日のクリック数を反映して、グラフを動的に更新！
-        // 過去7日間の最大値を取得（基準は最低100）
         let recentHistory = [...history].slice(-7);
         let maxScore = 100;
         recentHistory.forEach(data => { if (data.score > maxScore) maxScore = data.score; });
 
-        // 「今日」の要素（ID: bar-today）をピンポイントで取得してニョキニョキさせる
         const todayBar = document.getElementById('bar-today');
         if (todayBar) {
             const barHeight = Math.min((score / maxScore) * 110, 110);
             todayBar.style.height = barHeight + 'px';
-            // 100回を超えたらグレーからエメラルドグリーンへ変化
             if (score >= 100) {
                 todayBar.style.backgroundColor = '#50C878';
             }
-            
-            // マウスホバー時のツールチップ用データも更新
             todayBar.dataset.score = score;
         }
     }
 
-    // グラフの土台を完全に構築する関数
     function buildGraphFull() {
         const history = JSON.parse(localStorage.getItem('click_history') || "[]");
         const container = document.getElementById('graph-container');
@@ -455,12 +459,10 @@
             bar.style.backgroundColor = data.score >= 100 ? '#50C878' : '#ccc';
             bar.className = "graph-bar";
             
-            // 🚀 今日の棒には特別なIDを付与して後からいじれるようにする
             if (data.date === todayStr) {
                 bar.id = 'bar-today';
             }
 
-            // ツールチップ表示用にデータを一時保持
             bar.dataset.date = data.date;
             bar.dataset.score = data.score;
 
