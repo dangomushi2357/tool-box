@@ -411,4 +411,104 @@
         if (todayBar) {
             const barHeight = Math.min((score / maxScore) * 110, 110);
             todayBar.style.height = barHeight + 'px';
-            // 100
+            // 100回を超えたらグレーからエメラルドグリーンへ変化
+            if (score >= 100) {
+                todayBar.style.backgroundColor = '#50C878';
+            }
+            
+            // マウスホバー時のツールチップ用データも更新
+            todayBar.dataset.score = score;
+        }
+    }
+
+    // グラフの土台を完全に構築する関数
+    function buildGraphFull() {
+        const history = JSON.parse(localStorage.getItem('click_history') || "[]");
+        const container = document.getElementById('graph-container');
+        const historyList = document.getElementById('full-history-list');
+        container.innerHTML = '';
+        historyList.innerHTML = '';
+
+        const todayStr = new Date().toLocaleDateString();
+        let recentHistory = [...history].slice(-7);
+        while (recentHistory.length < 7) {
+            recentHistory.unshift({ date: "", score: -1 });
+        }
+
+        let maxScore = 100;
+        recentHistory.forEach(data => { if (data.score > maxScore) maxScore = data.score; });
+
+        const tooltip = document.getElementById('tooltip');
+
+        recentHistory.forEach(data => {
+            const column = document.createElement('div');
+            column.style.cssText = "display:flex; flex-direction:column; align-items:center; gap:5px; width:40px;";
+            if (data.score === -1) {
+                container.appendChild(column);
+                return;
+            }
+
+            const bar = document.createElement('div');
+            const barHeight = Math.min((data.score / maxScore) * 110, 110);
+            bar.style.cssText = `width:25px; height:${barHeight}px; border-radius:3px 3px 0 0;`;
+            bar.style.backgroundColor = data.score >= 100 ? '#50C878' : '#ccc';
+            bar.className = "graph-bar";
+            
+            // 🚀 今日の棒には特別なIDを付与して後からいじれるようにする
+            if (data.date === todayStr) {
+                bar.id = 'bar-today';
+            }
+
+            // ツールチップ表示用にデータを一時保持
+            bar.dataset.date = data.date;
+            bar.dataset.score = data.score;
+
+            bar.onmouseover = (e) => {
+                tooltip.innerText = bar.dataset.date + ": " + bar.dataset.score + "回";
+                tooltip.style.display = 'block';
+            };
+            bar.onmousemove = (e) => {
+                tooltip.style.left = (e.pageX + 15) + 'px';
+                tooltip.style.top = (e.pageY + 15) + 'px';
+            };
+            bar.onmouseout = () => { tooltip.style.display = 'none'; };
+
+            const dateText = document.createElement('div');
+            dateText.innerText = data.date.split('/').slice(1).join('/');
+            dateText.style.fontSize = '10px';
+            
+            column.appendChild(bar);
+            column.appendChild(dateText);
+            container.appendChild(column);
+        });
+
+        if (history.length > 0) {
+            const table = document.createElement('table');
+            table.className = "history-table";
+            table.innerHTML = `<thead><tr><th>日付</th><th>回数</th></tr></thead><tbody>` + 
+                history.map(item => `<tr><td>${item.date}</td><td>${item.score}回</td></tr>`).reverse().join('') + 
+                `</tbody>`;
+            historyList.appendChild(table);
+        }
+    }
+
+    function downloadCSV() {
+        const history = JSON.parse(localStorage.getItem('click_history') || "[]");
+        if (history.length === 0) {
+            alert("保存する履歴がありません。");
+            return;
+        }
+        let csvContent = "日付,クリック回数\n";
+        history.forEach(item => { csvContent += item.date + "," + item.score + "\n"; });
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", "click_history_report.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+</script>
+</body>
+</html>
