@@ -6,50 +6,63 @@
     <title>クリックゲーム</title>
     <link rel="icon" href="dango_1(default).png" type="image/png">
     <style>
-        /* === 1. 全体・ヘッダー（他のツールと完全統一） === */
         body {
-            font-family: sans-serif;
-            background-color: #f0f0f0;
-            color: #333;
-            margin: 0;
-            padding-bottom: 50px;
-        }
-        header {
-            background-color: #50C878;
-            color: white;
-            padding: 30px 10px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        .title-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-            max-width: 90%;
-            margin: 0 auto;
-        }
-        .main-title {
-            font-size: 2.2rem;
-            font-weight: bold;
-            color: white;
-            margin: 0;
-        }
-        .dango-icon {
-            width: 100px;
-            height: 100px;
-            object-fit: contain;
-            background-color: white;
-            border-radius: 50%;
-            padding: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        header p {
-            color: #ffffff;
-            opacity: 0.9;
-            margin-top: 10px;
-            font-size: 1rem;
-        }
+    font-family: sans-serif;
+    background-color: #f0f0f0;
+    color: #333;
+    margin: 0;
+    padding-bottom: 50px;
+}
+<header>
+    <div class="title-container">
+        <img src="dango_1(default).png" alt="ダンゴムシ（普通）" class="dango-icon">
+        <h1 class="main-title">クリックゲーム</h1>
+        <img src="dango_2(smile).png" alt="ダンゴムシ（にっこり）" class="dango-icon">
+    </div>
+    <p>ボタンをクリックしてスコアを伸ばすミニゲームです。</p>
+</header>
+.title-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    max-width: 90%;
+    margin: 0 auto;
+}
+.main-title {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: white;
+    margin: 0;
+}
+.dango-icon {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    background-color: white;
+    border-radius: 50%;
+    padding: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+header p {
+    color: #ffffff;
+    opacity: 0.9;
+    margin-top: 10px;
+    font-size: 1rem;
+}
+@media (max-width: 600px) {
+    .title-container {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .main-title {
+        font-size: 1.6rem;
+    }
+    .dango-icon {
+        width: 80px;
+        height: 80px;
+    }
+}
 
         /* === 2. 本体のオリジナルレイアウト（一切変えない！） === */
         .container {
