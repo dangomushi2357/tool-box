@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>クリックゲーム - v5.2.2</title>
+    <title>クリックゲーム - v5.2.3</title>
     <link rel="icon" href="dango_1(default).png" type="image/png">
     <style>
         body {
@@ -398,7 +398,6 @@
         buildGraphFull();
     }
 
-    // === 🛠️ 変更点：裏データ保存、グラフの棒、さらに「履歴テーブルの文字」も同時に書き換える ===
     function saveScoreAndRefreshGraph(score) {
         const todayStr = new Date().toLocaleDateString();
         let history = JSON.parse(localStorage.getItem('click_history') || "[]");
@@ -407,7 +406,6 @@
             history[todayIdx].score = score;
         } else {
             history.push({ date: todayStr, score: score });
-            // 初めての日のデータが作られた場合はテーブルの行数が変わるため全体を再描画
             buildGraphFull();
             return;
         }
@@ -418,7 +416,7 @@
         let maxScore = 100;
         recentHistory.forEach(data => { if (data.score > maxScore) maxScore = data.score; });
 
-        // 1. グラフのニョキニョキ更新
+        // 1. グラフのニョキニョキ更新＆データ属性(dataset)のリアルタイム書き換え
         const todayBar = document.getElementById('bar-today');
         if (todayBar) {
             const barHeight = Math.min((score / maxScore) * 110, 110);
@@ -426,10 +424,19 @@
             if (score >= 100) {
                 todayBar.style.backgroundColor = '#50C878';
             }
+            
+            // 🚀【重要：修正点】DOM内部に持っているスコアデータをその場で最新化！
             todayBar.dataset.score = score;
+
+            // 🚀【重要：修正点】もしカーソルが今まさに「今日の棒」の上に乗っていた場合、
+            // ポップアップ中のツールチップ文字自体も即座にアップデート！
+            const tooltip = document.getElementById('tooltip');
+            if (tooltip && tooltip.style.display === 'block') {
+                tooltip.innerText = todayBar.dataset.date + ": " + score + "回";
+            }
         }
 
-        // 2. 🚀【新機能】全履歴テーブルの今日の行（#table-today-score）をその場で書き換え！
+        // 2. 全履歴テーブルの今日の行をその場で書き換え
         const todayTableScore = document.getElementById('table-today-score');
         if (todayTableScore) {
             todayTableScore.innerText = score + "回";
@@ -498,7 +505,6 @@
             const table = document.createElement('table');
             table.className = "history-table";
             
-            // 🚀【新機能】テーブル生成時に「今日の日付のセル」にID（table-today-score）を仕込む
             let tableRowsHtml = history.map(item => {
                 if (item.date === todayStr) {
                     return `<tr><td>${item.date}</td><td id="table-today-score" style="font-weight:bold; color:#50C878;">${item.score}回</td></tr>`;
