@@ -6,65 +6,52 @@
     <title>クリックゲーム</title>
     <link rel="icon" href="dango_1(default).png" type="image/png">
     <style>
+        /* === 1. ヘッダー・全体デザイン（文法エラーを修正） === */
         body {
-    font-family: sans-serif;
-    background-color: #f0f0f0;
-    color: #333;
-    margin: 0;
-    padding-bottom: 50px;
-}
-<header>
-    <div class="title-container">
-        <img src="dango_1(default).png" alt="ダンゴムシ（普通）" class="dango-icon">
-        <h1 class="main-title">クリックゲーム</h1>
-        <img src="dango_2(smile).png" alt="ダンゴムシ（にっこり）" class="dango-icon">
-    </div>
-    <p>ボタンをクリックしてスコアを伸ばすミニゲームです。</p>
-</header>
-.title-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
-    max-width: 90%;
-    margin: 0 auto;
-}
-.main-title {
-    font-size: 2.2rem;
-    font-weight: bold;
-    color: white;
-    margin: 0;
-}
-.dango-icon {
-    width: 100px;
-    height: 100px;
-    object-fit: contain;
-    background-color: white;
-    border-radius: 50%;
-    padding: 8px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-header p {
-    color: #ffffff;
-    opacity: 0.9;
-    margin-top: 10px;
-    font-size: 1rem;
-}
-@media (max-width: 600px) {
-    .title-container {
-        flex-direction: column;
-        gap: 10px;
-    }
-    .main-title {
-        font-size: 1.6rem;
-    }
-    .dango-icon {
-        width: 80px;
-        height: 80px;
-    }
-}
+            font-family: sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            margin: 0;
+            padding-bottom: 50px;
+        }
+        header {
+            background-color: #50C878;
+            color: white;
+            padding: 30px 10px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .title-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            max-width: 90%;
+            margin: 0 auto;
+        }
+        .main-title {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: white;
+            margin: 0;
+        }
+        .dango-icon {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            background-color: white;
+            border-radius: 50%;
+            padding: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        header p {
+            color: #ffffff;
+            opacity: 0.9;
+            margin-top: 10px;
+            font-size: 1rem;
+        }
 
-        /* === 2. 本体のオリジナルレイアウト（一切変えない！） === */
+        /* === 2. 本体のオリジナルレイアウト === */
         .container {
             background: white;
             padding: 30px;
@@ -130,7 +117,7 @@ header p {
             border: 1px solid #eee;
         }
 
-        /* === 3. グラフ表示部分（バグ修正：右寄りの偏りを直して中央・均等配置へ） === */
+        /* === 3. グラフ表示部分（中央・均等配置） === */
         .graph-container {
             margin-top: 30px;
             padding: 15px;
@@ -148,15 +135,15 @@ header p {
         .graph-wrap {
             display: flex;
             align-items: flex-end;
-            justify-content: center; /* 均等・中央に寄せるように修正 */
-            gap: 8px;                /* 7件でも偏らないように間隔を最適化 */
+            justify-content: center;
+            gap: 8px;
             height: 120px;
             padding-top: 20px;
             border-bottom: 2px solid #ccc;
         }
         .graph-bar {
             flex: 1;
-            max-width: 35px;         /* 1本あたりの最大幅を固定して右寄りを防止 */
+            max-width: 35px;
             background-color: #007bff;
             border-radius: 4px 4px 0 0;
             position: relative;
@@ -224,15 +211,14 @@ header p {
 
     <div class="graph-container">
         <div class="graph-title">📊 最近のプレイ履歴（スコア推移）</div>
-        <div class="graph-wrap" id="historyGraph">
-            </div>
+        <div class="graph-wrap" id="historyGraph"></div>
     </div>
 
     <a href="index.html" class="back-link">← ホームに戻る</a>
 </div>
 
 <script>
-    // === [重要] ローカルストレージからのデータ読み込み（リセットを絶対防止） ===
+    // === [重要] ローカルストレージからのデータ読み込み ===
     let clickCount = parseInt(localStorage.getItem('myClickCount')) || 0;
     let todaySession = parseInt(localStorage.getItem('todaySessionCount')) || 0;
     let lastPlay = localStorage.getItem('last_play_date') || "未プレイ";
@@ -279,20 +265,18 @@ header p {
         document.getElementById('streakBadge').innerText = `🔥 ${streak} 連撃目`;
     }
 
-    // === バグ修正①：100回未満の更新でも【絶対に履歴をリセットしない】保存処理 ===
+    // === 保存処理 ===
     function saveGameHistory() {
         localStorage.setItem('myClickCount', clickCount);
         localStorage.setItem('todaySessionCount', todaySession);
         localStorage.setItem('last_play_date', lastPlay);
         localStorage.setItem('click_streak', streak);
 
-        // 毎回現在のスコアを正しく末尾に追加
         history.push({
             timestamp: new Date().getTime(),
             current_score: clickCount
         });
 
-        // 50件を超えた場合のみ、古いものを削除（100回未満で消えるバグを完全修正）
         if (history.length > 50) {
             history.shift();
         }
@@ -301,20 +285,18 @@ header p {
         drawGraph();
     }
 
-    // === バグ修正③：7件などの少ない件数でも中央に綺麗に並ぶグラフ描画ロジック ===
+    // === グラフ描画ロジック ===
     function drawGraph() {
         const graphWrap = document.getElementById('historyGraph');
-        graphWrap.innerHTML = ""; // 初期化
+        graphWrap.innerHTML = ""; 
 
         if (history.length === 0) {
             graphWrap.innerHTML = "<div style='color:#aaa; font-size:12px; width:100%; text-align:center; line-height:100px;'>履歴データがありません</div>";
             return;
         }
 
-        // 表示する件数を直近の最大7件に制限（または全件からスライス）
         const displayData = history.slice(-7); 
 
-        // グラフの最大高さを計算するための基準値を取得
         const scores = displayData.map(d => d.current_score);
         const maxScore = Math.max(...scores) || 1;
         const minScore = Math.min(...scores) || 0;
@@ -324,11 +306,9 @@ header p {
             const bar = document.createElement('div');
             bar.className = 'graph-bar';
             
-            // 高さをパーセンテージで計算（最低でも10%の高さは確保して見やすくする）
             const heightPercent = ((item.current_score - minScore) / scoreRange) * 80 + 10;
             bar.style.height = `${heightPercent}%`;
 
-            // バーの上にスコア数値を表示
             const label = document.createElement('span');
             label.className = 'graph-label';
             label.innerText = item.current_score;
