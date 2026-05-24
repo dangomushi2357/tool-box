@@ -8,12 +8,11 @@
     <style>
         body {
             font-family: sans-serif;
-            background-color: #f0f0f0; /* サイト全体と背景色を統一 */
+            background-color: #f0f0f0;
             color: #333;
             margin: 0;
             padding-bottom: 50px;
         }
-        /* ホームとお揃いのエメラルドグリーンヘッダーじぇみ！ */
         header {
             background-color: #50C878;
             color: white;
@@ -35,7 +34,6 @@
             color: white;
             margin: 0;
         }
-        /* 10億点満点の丸型ダンゴムシバッジも配置じぇみ！ */
         .dango-icon {
             width: 100px;
             height: 100px;
@@ -55,7 +53,7 @@
             background: white;
             padding: 30px;
             border-radius: 15px;
-            box-shadow: 3px 6px 0 #ccc; /* ボタン風の立体的な影 */
+            box-shadow: 3px 6px 0 #ccc;
             max-width: 500px;
             width: 90%;
             margin: 0 auto;
@@ -63,7 +61,7 @@
         }
         .date-display {
             text-align: center;
-            color: #50C878; /* 緑色にして目立たせたじぇみ */
+            color: #50C878;
             margin-bottom: 20px;
             font-weight: bold;
             font-size: 1.2rem;
@@ -87,25 +85,23 @@
         input[type="number"]:focus {
             border-color: #50C878;
         }
-        /* ボタンも押し心地のいい立体デザインにしたじぇみ！ */
         button {
             width: 100%;
             padding: 14px;
-            background-color: #007bff;
+            background-color: #e91e63;
             color: white;
             border: none;
             border-radius: 10px;
             font-size: 18px;
             font-weight: bold;
             cursor: pointer;
-            box-shadow: 0 5px 0 #0056b3;
+            box-shadow: 0 5px 0 #ad1457;
             transition: 0.1s;
         }
         button:active {
             box-shadow: none;
             transform: translateY(5px);
         }
-        /* 戻るボタン用のスタイル */
         .back-link {
             display: block;
             text-align: center;
@@ -122,7 +118,7 @@
             margin-top: 30px;
         }
         h3 {
-            border-bottom: 3px solid #50C878; /* ここもテーマカラーに */
+            border-bottom: 3px solid #50C878;
             padding-bottom: 5px;
             font-size: 16px;
             color: #333;
@@ -160,14 +156,14 @@
         <h1 class="main-title">タイムスタンプ素数チェッカー</h1>
         <img src="dango_2(smile).png" alt="ダンゴムシ（にっこり）" class="dango-icon">
     </div>
-    <p>今日の日付と時間から生まれる神秘の素数を見つけ出します。</p>
+    <p>今日の日付と時間から生まれる素数を見つけ出します。</p>
 </header>
 
 <div class="container">
     <div id="todayDate" class="date-display"></div>
     <label for="limitInput">取得する素数の個数（空欄で全件出力）</label>
     <input type="number" id="limitInput" min="1" placeholder="例: 30">
-    <button onclick="findPrimes()">素数を探すじぇみ！</button>
+    <button onclick="findPrimes()">素数を探す！</button>
 
     <div class="output-section">
         <h3>=== 出力1：配列形式 ===</h3>
@@ -181,7 +177,6 @@
 </div>
 
 <script>
-    // あなたが作った天才的なロジックは1文字も変えずにそのまま動くじぇみ！
     const now = new Date();
     const yyyy = now.getFullYear();
     const mm = String(now.getMonth() + 1).padStart(2, '0');
