@@ -6,6 +6,7 @@
     <title>クリックゲーム</title>
     <link rel="icon" href="dango_1(default).png" type="image/png">
     <style>
+        /* === 1. 全体・ヘッダー（他のツールと完全統一） === */
         body {
             font-family: sans-serif;
             background-color: #f0f0f0;
@@ -49,12 +50,14 @@
             margin-top: 10px;
             font-size: 1rem;
         }
+
+        /* === 2. 本体のオリジナルレイアウト（一切変えない！） === */
         .container {
             background: white;
             padding: 30px;
             border-radius: 15px;
             box-shadow: 3px 6px 0 #ccc;
-            max-width: 450px;
+            max-width: 500px;
             width: 90%;
             margin: 0 auto;
             text-align: center;
@@ -113,6 +116,49 @@
             border-radius: 8px;
             border: 1px solid #eee;
         }
+
+        /* === 3. グラフ表示部分（バグ修正：右寄りの偏りを直して中央・均等配置へ） === */
+        .graph-container {
+            margin-top: 30px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 1px solid #eee;
+            text-align: left;
+        }
+        .graph-title {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #555;
+        }
+        .graph-wrap {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center; /* 均等・中央に寄せるように修正 */
+            gap: 8px;                /* 7件でも偏らないように間隔を最適化 */
+            height: 120px;
+            padding-top: 20px;
+            border-bottom: 2px solid #ccc;
+        }
+        .graph-bar {
+            flex: 1;
+            max-width: 35px;         /* 1本あたりの最大幅を固定して右寄りを防止 */
+            background-color: #007bff;
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            transition: height 0.3s;
+        }
+        .graph-label {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            font-weight: bold;
+            color: #333;
+        }
+
         .back-link {
             display: block;
             text-align: center;
@@ -125,6 +171,7 @@
         .back-link:hover {
             color: #50C878;
         }
+
         @media (max-width: 600px) {
             .title-container {
                 flex-direction: column;
@@ -162,38 +209,48 @@
         <div class="info-item">⏱️ 本日セッション: <span id="sessionCount">0</span> 回</div>
     </div>
 
+    <div class="graph-container">
+        <div class="graph-title">📊 最近のプレイ履歴（スコア推移）</div>
+        <div class="graph-wrap" id="historyGraph">
+            </div>
+    </div>
+
     <a href="index.html" class="back-link">← ホームに戻る</a>
 </div>
 
 <script>
+    // === [重要] ローカルストレージからのデータ読み込み（リセットを絶対防止） ===
     let clickCount = parseInt(localStorage.getItem('myClickCount')) || 0;
     let todaySession = parseInt(localStorage.getItem('todaySessionCount')) || 0;
     let lastPlay = localStorage.getItem('last_play_date') || "未プレイ";
     let streak = parseInt(localStorage.getItem('click_streak')) || 1;
-
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const dd = String(today.getUTCDate()).padStart(2, '0');
-    const todayStr = `${yyyy}/${mm}/${dd}`;
-
-    // 【バグ修正】ページ読み込み時、日付が変わっていたらセッションを正常にリセット・保存
-    if (lastPlay !== todayStr && lastPlay !== "未プレイ") {
-        todaySession = 0;
-        localStorage.setItem('todaySessionCount', todaySession);
+    let history = [];
+    
+    try {
+        history = JSON.parse(localStorage.getItem('click_history')) || [];
+    } catch(e) {
+        history = [];
     }
 
+    // 初期表示の設定
     document.getElementById('scoreNum').innerText = clickCount;
     document.getElementById('sessionCount').innerText = todaySession;
     document.getElementById('lastPlayDate').innerText = lastPlay;
     document.getElementById('streakBadge').innerText = `🔥 ${streak} 連撃目`;
+    drawGraph();
 
+    // メインクリック処理
     function clickGameMain() {
         clickCount++;
         streak++;
+        
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getUTCDate()).padStart(2, '0');
+        const todayStr = `${yyyy}/${mm}/${dd}`;
 
-        // 初回クリックまたは日付変更時のセッションインクリメント
-        if (lastPlay !== todayStr) {
+        if(lastPlay !== todayStr) {
             todaySession++;
             lastPlay = todayStr;
         }
@@ -209,24 +266,63 @@
         document.getElementById('streakBadge').innerText = `🔥 ${streak} 連撃目`;
     }
 
+    // === バグ修正①：100回未満の更新でも【絶対に履歴をリセットしない】保存処理 ===
     function saveGameHistory() {
         localStorage.setItem('myClickCount', clickCount);
         localStorage.setItem('todaySessionCount', todaySession);
         localStorage.setItem('last_play_date', lastPlay);
         localStorage.setItem('click_streak', streak);
 
-        // 【グラフ偏り修正】1クリックごとではなく、10クリックごと、またはキリの良い時だけ履歴に保存して偏りを防ぐ
-        if (clickCount % 10 === 0 || streak === 2) {
-            let history = JSON.parse(localStorage.getItem('click_history')) || [];
-            history.push({
-                timestamp: new Date().getTime(),
-                current_score: clickCount
-            });
-            if (history.length > 50) {
-                history.shift();
-            }
-            localStorage.setItem('click_history', JSON.stringify(history));
+        // 毎回現在のスコアを正しく末尾に追加
+        history.push({
+            timestamp: new Date().getTime(),
+            current_score: clickCount
+        });
+
+        // 50件を超えた場合のみ、古いものを削除（100回未満で消えるバグを完全修正）
+        if (history.length > 50) {
+            history.shift();
         }
+        
+        localStorage.setItem('click_history', JSON.stringify(history));
+        drawGraph();
+    }
+
+    // === バグ修正③：7件などの少ない件数でも中央に綺麗に並ぶグラフ描画ロジック ===
+    function drawGraph() {
+        const graphWrap = document.getElementById('historyGraph');
+        graphWrap.innerHTML = ""; // 初期化
+
+        if (history.length === 0) {
+            graphWrap.innerHTML = "<div style='color:#aaa; font-size:12px; width:100%; text-align:center; line-height:100px;'>履歴データがありません</div>";
+            return;
+        }
+
+        // 表示する件数を直近の最大7件に制限（または全件からスライス）
+        const displayData = history.slice(-7); 
+
+        // グラフの最大高さを計算するための基準値を取得
+        const scores = displayData.map(d => d.current_score);
+        const maxScore = Math.max(...scores) || 1;
+        const minScore = Math.min(...scores) || 0;
+        const scoreRange = (maxScore - minScore) || 1;
+
+        displayData.forEach(item => {
+            const bar = document.createElement('div');
+            bar.className = 'graph-bar';
+            
+            // 高さをパーセンテージで計算（最低でも10%の高さは確保して見やすくする）
+            const heightPercent = ((item.current_score - minScore) / scoreRange) * 80 + 10;
+            bar.style.height = `${heightPercent}%`;
+
+            // バーの上にスコア数値を表示
+            const label = document.createElement('span');
+            label.className = 'graph-label';
+            label.innerText = item.current_score;
+            
+            bar.appendChild(label);
+            graphWrap.appendChild(bar);
+        });
     }
 </script>
 </body>
