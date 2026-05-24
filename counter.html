@@ -2,101 +2,188 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>数取機</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数取機（カウンター）</title>
     <link rel="icon" href="dango_1(default).png" type="image/png">
     <style>
-        body { text-align: center; font-family: sans-serif; background-color: #f0f0f0; padding-top: 50px; }
-        #count-val { font-size: 120px; margin: 20px 0; font-weight: bold; }
-
-        .main-btn {
-            display: inline-block;
+        body {
+            font-family: sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            margin: 0;
+            padding-bottom: 50px;
+        }
+        header {
+            background-color: #50C878;
             color: white;
-            width: 120px;
-            height: 100px;
-            border-radius: 15px;
+            padding: 30px 10px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .title-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            max-width: 90%;
+            margin: 0 auto;
+        }
+        .main-title {
+            font-size: 2.2rem;
             font-weight: bold;
-            font-size: 50px;
-            cursor: pointer;
+            color: white;
+            margin: 0;
+        }
+        .dango-icon {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            background-color: white;
+            border-radius: 50%;
+            padding: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        header p {
+            color: #ffffff;
+            opacity: 0.9;
+            margin-top: 10px;
+            font-size: 1rem;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 3px 6px 0 #ccc;
+            max-width: 400px;
+            width: 90%;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .counter-display {
+            font-size: 80px;
+            font-weight: bold;
+            color: #28a745;
+            margin: 20px 0;
+            font-family: monospace;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 10px;
+            border: 2px solid #eee;
+        }
+        .btn-main {
+            width: 100%;
+            padding: 20px;
+            background-color: #28a745;
+            color: white;
             border: none;
+            border-radius: 15px;
+            font-size: 32px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 8px 0 #1e7e34;
             transition: 0.1s;
-            user-select: none;
-            margin: 15px;
-            line-height: 100px;
+            margin-bottom: 20px;
         }
-
-        .plus-btn {
-            background-color: #007bff;
-            box-shadow: 3px 10px 0 #0056b3;
-        }
-
-        .minus-btn {
-            background-color: #dc3545;
-            box-shadow: 3px 10px 0 #a71d2a;
-        }
-
-        .main-btn:active {
+        .btn-main:active {
             box-shadow: none;
-            transform: translateY(10px) translateX(5px);
+            transform: translateY(8px);
         }
-
-        .sub-btn { border: none; border-radius: 5px; cursor: pointer; padding: 8px 15px; color: white; }
+        .sub-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        .btn-sub {
+            flex: 1;
+            padding: 12px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #495057;
+            transition: 0.1s;
+        }
+        .btn-sub:active {
+            box-shadow: none;
+            transform: translateY(4px);
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 25px;
+            color: #666;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .back-link:hover {
+            color: #50C878;
+        }
+        @media (max-width: 600px) {
+            .title-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .main-title {
+                font-size: 1.6rem;
+            }
+            .dango-icon {
+                width: 80px;
+                height: 80px;
+            }
+        }
     </style>
 </head>
 <body>
-    <h1>数取機</h1>
 
-    <div style="margin-bottom: 20px;">
-        <button class="sub-btn" style="background-color:red;" onclick="reset()">リセット</button>
-        <button class="sub-btn" style="background-color: #6c757d; margin-left: 10px;" onclick="goHome()">ホームに戻る</button>
+<header>
+    <div class="title-container">
+        <img src="dango_1(default).png" alt="ダンゴムシ（普通）" class="dango-icon">
+        <h1 class="main-title">数取機（カウンター）</h1>
+        <img src="dango_2(smile).png" alt="ダンゴムシ（にっこり）" class="dango-icon">
     </div>
+    <p>クリックするだけで数を記録できるシンプルな数取機です。</p>
+</header>
 
-    <div id="count-val">0</div>
+<div class="container">
+    <div class="counter-display" id="counterNum">0</div>
+    <button class="btn-main" onclick="countUp()">カウントを進める</button>
+    <div class="sub-buttons">
+        <button class="btn-sub" onclick="countDown()">戻す</button>
+        <button class="btn-sub" style="background-color: #dc3545; box-shadow: 0 4px 0 #bd2130;" onclick="countReset()">リセット</button>
+    </div>
+    <a href="index.html" class="back-link">← ホームに戻る</a>
+</div>
 
-    <button class="main-btn minus-btn" onclick="minus()">-</button>
-    <button class="main-btn plus-btn" onclick="add()">+</button>
+<script>
+    let count = parseInt(localStorage.getItem('counter_val')) || 0;
+    document.getElementById('counterNum').innerText = count;
 
-    <script>
-        let n = parseInt(localStorage.getItem('counter_val')) || 0;
-        const display = document.getElementById('count-val');
-        display.innerText = n;
-
-        function save() {
-            localStorage.setItem('counter_val', n);
-        }
-        function updateDisplay() {
-            display.innerText = n;
-        
-            if (n < 0) {
-                display.style.color = "red";
-            } else {
-                display.style.color = "black";
-            }
-        }
-
-        function add() {
-            n++;
-            updateDisplay();
-            save();
-        }
-
-        function minus() {
-            n--;
-            updateDisplay();
-            save();
-        }
-
-        function reset() {
-            if(confirm("0に戻しますか？")) {
-                n = 0;
-                updateDisplay();
-                save();
-            }
-        }
+    function countUp() {
+        count++;
         updateDisplay();
+    }
 
-        function goHome() {
-            location.href = "index.html";
+    function countDown() {
+        if (count > 0) {
+            count--;
+            updateDisplay();
         }
-    </script>
+    }
+
+    function countReset() {
+        if (confirm("カウントをリセットしますか？")) {
+            count = 0;
+            updateDisplay();
+        }
+    }
+
+    function updateDisplay() {
+        document.getElementById('counterNum').innerText = count;
+        localStorage.setItem('counter_val', count);
+    }
+</script>
 </body>
 </html>
