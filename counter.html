@@ -60,40 +60,53 @@
             text-align: center;
         }
         .counter-display {
-            font-size: 80px;
+            font-size: 96px;
             font-weight: bold;
             color: #28a745;
-            margin: 20px 0;
+            margin: 10px 0 25px 0;
             font-family: monospace;
             background: #f8f9fa;
             border-radius: 10px;
-            padding: 10px;
+            padding: 15px;
             border: 2px solid #eee;
+            min-height: 110px;
+            line-height: 110px;
         }
-        .btn-main {
-            width: 100%;
-            padding: 20px;
-            background-color: #28a745;
+        .control-buttons {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .btn-count {
+            flex: 1;
+            padding: 15px 0;
             color: white;
             border: none;
             border-radius: 15px;
-            font-size: 32px;
+            font-size: 48px;
             font-weight: bold;
             cursor: pointer;
-            box-shadow: 0 8px 0 #1e7e34;
             transition: 0.1s;
-            margin-bottom: 20px;
+            user-select: none;
         }
-        .btn-main:active {
+        .btn-plus {
+            background-color: #28a745;
+            box-shadow: 0 8px 0 #1e7e34;
+        }
+        .btn-plus:active {
             box-shadow: none;
             transform: translateY(8px);
         }
-        .sub-buttons {
-            display: flex;
-            gap: 15px;
+        .btn-minus {
+            background-color: #dc3545;
+            box-shadow: 0 8px 0 #bd2130;
         }
-        .btn-sub {
-            flex: 1;
+        .btn-minus:active {
+            box-shadow: none;
+            transform: translateY(8px);
+        }
+        .btn-reset {
+            width: 100%;
             padding: 12px;
             background-color: #6c757d;
             color: white;
@@ -105,7 +118,7 @@
             box-shadow: 0 4px 0 #495057;
             transition: 0.1s;
         }
-        .btn-sub:active {
+        .btn-reset:active {
             box-shadow: none;
             transform: translateY(4px);
         }
@@ -144,16 +157,19 @@
         <h1 class="main-title">数取機（カウンター）</h1>
         <img src="dango_2(smile).png" alt="ダンゴムシ（にっこり）" class="dango-icon">
     </div>
-    <p>クリックするだけで数を記録できるシンプルな数取機です。</p>
+    <p>大きなボタンで快適に数を記録できるシンプルな数取機です。</p>
 </header>
 
 <div class="container">
     <div class="counter-display" id="counterNum">0</div>
-    <button class="btn-main" onclick="countUp()">カウントを進める</button>
-    <div class="sub-buttons">
-        <button class="btn-sub" onclick="countDown()">戻す</button>
-        <button class="btn-sub" style="background-color: #dc3545; box-shadow: 0 4px 0 #bd2130;" onclick="countReset()">リセット</button>
+    
+    <div class="control-buttons">
+        <button class="btn-count btn-minus" onclick="countDown()">-</button>
+        <button class="btn-count btn-plus" onclick="countUp()">+</button>
     </div>
+
+    <button class="btn-reset" onclick="countReset()">数値をリセット</button>
+    
     <a href="index.html" class="back-link">← ホームに戻る</a>
 </div>
 
