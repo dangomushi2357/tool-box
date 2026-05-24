@@ -54,40 +54,30 @@
             padding: 30px;
             border-radius: 15px;
             box-shadow: 3px 6px 0 #ccc;
-            max-width: 450px;
+            max-width: 400px;
             width: 90%;
             margin: 0 auto;
             text-align: center;
         }
         .score-display {
-            font-size: 48px;
+            font-size: 64px;
             font-weight: bold;
             color: #007bff;
-            margin: 15px 0;
+            margin: 20px 0;
             font-family: monospace;
             background: #f8f9fa;
             border-radius: 10px;
             padding: 10px;
             border: 2px solid #eee;
         }
-        .streak-display {
-            font-size: 18px;
-            color: #ffc107;
-            font-weight: bold;
-            background: #343a40;
-            padding: 5px 15px;
-            border-radius: 20px;
-            display: inline-block;
-            margin-bottom: 20px;
-        }
         .btn-main {
             width: 100%;
-            padding: 25px;
+            padding: 20px;
             background-color: #007bff;
             color: white;
             border: none;
             border-radius: 15px;
-            font-size: 28px;
+            font-size: 32px;
             font-weight: bold;
             cursor: pointer;
             box-shadow: 0 8px 0 #0056b3;
@@ -98,20 +88,6 @@
         .btn-main:active {
             box-shadow: none;
             transform: translateY(8px);
-        }
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 15px;
-            text-align: left;
-            font-size: 14px;
-        }
-        .info-item {
-            background: #f8f9fa;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #eee;
         }
         .back-link {
             display: block;
@@ -152,71 +128,19 @@
 </header>
 
 <div class="container">
-    <div id="streakBadge" class="streak-display">🔥 1 連撃目</div>
     <div class="score-display" id="scoreNum">0</div>
-    
     <button class="btn-main" onclick="clickGameMain()">クリック！</button>
-
-    <div class="info-grid">
-        <div class="info-item">📅 最終プレイ: <span id="lastPlayDate">-</span></div>
-        <div class="info-item">⏱️ 本日セッション: <span id="sessionCount">0</span> 回</div>
-    </div>
-
     <a href="index.html" class="back-link">← ホームに戻る</a>
 </div>
 
 <script>
     let clickCount = parseInt(localStorage.getItem('myClickCount')) || 0;
-    let todaySession = parseInt(localStorage.getItem('todaySessionCount')) || 0;
-    let lastPlay = localStorage.getItem('last_play_date') || "未プレイ";
-    let streak = parseInt(localStorage.getItem('click_streak')) || 1;
-
     document.getElementById('scoreNum').innerText = clickCount;
-    document.getElementById('sessionCount').innerText = todaySession;
-    document.getElementById('lastPlayDate').innerText = lastPlay;
-    document.getElementById('streakBadge').innerText = `🔥 ${streak} 連撃目`;
 
     function clickGameMain() {
-        clickCount += streak;
-        streak++;
-        
-        const today = new Date();
-        const yyyy = today.getFullYear();
-        const mm = String(today.getMonth() + 1).padStart(2, '0');
-        const dd = String(today.getUTCDate()).padStart(2, '0');
-        const todayStr = `${yyyy}/${mm}/${dd}`;
-
-        if(lastPlay !== todayStr) {
-            todaySession++;
-            lastPlay = todayStr;
-        }
-
-        updateGameDisplay();
-        saveGameHistory();
-    }
-
-    function updateGameDisplay() {
+        clickCount++;
         document.getElementById('scoreNum').innerText = clickCount;
-        document.getElementById('sessionCount').innerText = todaySession;
-        document.getElementById('lastPlayDate').innerText = lastPlay;
-        document.getElementById('streakBadge').innerText = `🔥 ${streak} 連撃目`;
-    }
-
-    function saveGameHistory() {
         localStorage.setItem('myClickCount', clickCount);
-        localStorage.setItem('todaySessionCount', todaySession);
-        localStorage.setItem('last_play_date', lastPlay);
-        localStorage.setItem('click_streak', streak);
-
-        let history = JSON.parse(localStorage.getItem('click_history')) || [];
-        history.push({
-            timestamp: new Date().getTime(),
-            current_score: clickCount
-        });
-        if(history.length > 50) {
-            history.shift();
-        }
-        localStorage.setItem('click_history', JSON.stringify(history));
     }
 </script>
 </body>
