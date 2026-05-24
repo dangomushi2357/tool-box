@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>クリックゲーム - v5.2.3</title>
+    <title>クリックゲーム - v5.2.4</title>
     <link rel="icon" href="dango_1(default).png" type="image/png">
     <style>
         body {
@@ -402,45 +402,44 @@
         const todayStr = new Date().toLocaleDateString();
         let history = JSON.parse(localStorage.getItem('click_history') || "[]");
         const todayIdx = history.findIndex(i => i.date === todayStr);
+        
+        // 🚀【ここを修正！】データが存在しているか、そして画面上の要素がちゃんとあるかチェック
+        const todayBar = document.getElementById('bar-today');
+        const todayTableScore = document.getElementById('table-today-score');
+
         if (todayIdx > -1) {
             history[todayIdx].score = score;
         } else {
             history.push({ date: todayStr, score: score });
-            buildGraphFull();
-            return;
         }
         if (history.length > 365) history.shift();
         localStorage.setItem('click_history', JSON.stringify(history));
+
+        // 🚀【最重要ポイント】リセット後など、画面上に「今日の棒や行」のDOMが存在しない場合は、一度全体を描画し直す！
+        if (!todayBar || !todayTableScore) {
+            buildGraphFull();
+            return; // 描画し直されたのでここで終了してOK
+        }
 
         let recentHistory = [...history].slice(-7);
         let maxScore = 100;
         recentHistory.forEach(data => { if (data.score > maxScore) maxScore = data.score; });
 
-        // 1. グラフのニョキニョキ更新＆データ属性(dataset)のリアルタイム書き換え
-        const todayBar = document.getElementById('bar-today');
-        if (todayBar) {
-            const barHeight = Math.min((score / maxScore) * 110, 110);
-            todayBar.style.height = barHeight + 'px';
-            if (score >= 100) {
-                todayBar.style.backgroundColor = '#50C878';
-            }
-            
-            // 🚀【重要：修正点】DOM内部に持っているスコアデータをその場で最新化！
-            todayBar.dataset.score = score;
+        // 1. グラフとデータ属性、ツールチップの書き換え
+        const barHeight = Math.min((score / maxScore) * 110, 110);
+        todayBar.style.height = barHeight + 'px';
+        if (score >= 100) {
+            todayBar.style.backgroundColor = '#50C878';
+        }
+        todayBar.dataset.score = score;
 
-            // 🚀【重要：修正点】もしカーソルが今まさに「今日の棒」の上に乗っていた場合、
-            // ポップアップ中のツールチップ文字自体も即座にアップデート！
-            const tooltip = document.getElementById('tooltip');
-            if (tooltip && tooltip.style.display === 'block') {
-                tooltip.innerText = todayBar.dataset.date + ": " + score + "回";
-            }
+        const tooltip = document.getElementById('tooltip');
+        if (tooltip && tooltip.style.display === 'block') {
+            tooltip.innerText = todayBar.dataset.date + ": " + score + "回";
         }
 
-        // 2. 全履歴テーブルの今日の行をその場で書き換え
-        const todayTableScore = document.getElementById('table-today-score');
-        if (todayTableScore) {
-            todayTableScore.innerText = score + "回";
-        }
+        // 2. 全履歴テーブルの今日の行を書き換え
+        todayTableScore.innerText = score + "回";
     }
 
     function buildGraphFull() {
