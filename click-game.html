@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>クリックゲーム - v5.2.1</title>
+    <title>クリックゲーム - v5.2.2</title>
     <link rel="icon" href="dango_1(default).png" type="image/png">
     <style>
         body {
@@ -151,7 +151,6 @@
         }
         .history-table th { background-color: #f2f2f2; }
         .details-container { margin-top: 20px; }
-        /* === 🛠️ 追加したメッセージのスタイル === */
         .notice-msg {
             font-size: 12px;
             color: #666;
@@ -263,7 +262,7 @@
         </details>
     </div>
     <br>
-    <button id="rainbow-toggle-btn" class="small-btn home-btn" style="display:none;" onclick="toggleRainbow()">🌈 背景的虹色をON/OFFする</button>
+    <button id="rainbow-toggle-btn" class="small-btn home-btn" style="display:none;" onclick="toggleRainbow()">🌈 背景の虹色をON/OFFする</button>
     <button id="secret-btn" onclick="secretPower()"></button>
 </div>
 <div id="tooltip" class="custom-tooltip"></div>
@@ -358,7 +357,6 @@
         }
     });
 
-    // タイポ修正 (背景的虹色 -> 背景の虹色)
     function toggleRainbow() { document.body.classList.toggle('rainbow-active'); }
     function goHome() { location.href = "index.html"; }
 
@@ -400,6 +398,7 @@
         buildGraphFull();
     }
 
+    // === 🛠️ 変更点：裏データ保存、グラフの棒、さらに「履歴テーブルの文字」も同時に書き換える ===
     function saveScoreAndRefreshGraph(score) {
         const todayStr = new Date().toLocaleDateString();
         let history = JSON.parse(localStorage.getItem('click_history') || "[]");
@@ -408,6 +407,9 @@
             history[todayIdx].score = score;
         } else {
             history.push({ date: todayStr, score: score });
+            // 初めての日のデータが作られた場合はテーブルの行数が変わるため全体を再描画
+            buildGraphFull();
+            return;
         }
         if (history.length > 365) history.shift();
         localStorage.setItem('click_history', JSON.stringify(history));
@@ -416,6 +418,7 @@
         let maxScore = 100;
         recentHistory.forEach(data => { if (data.score > maxScore) maxScore = data.score; });
 
+        // 1. グラフのニョキニョキ更新
         const todayBar = document.getElementById('bar-today');
         if (todayBar) {
             const barHeight = Math.min((score / maxScore) * 110, 110);
@@ -424,6 +427,12 @@
                 todayBar.style.backgroundColor = '#50C878';
             }
             todayBar.dataset.score = score;
+        }
+
+        // 2. 🚀【新機能】全履歴テーブルの今日の行（#table-today-score）をその場で書き換え！
+        const todayTableScore = document.getElementById('table-today-score');
+        if (todayTableScore) {
+            todayTableScore.innerText = score + "回";
         }
     }
 
@@ -488,9 +497,16 @@
         if (history.length > 0) {
             const table = document.createElement('table');
             table.className = "history-table";
-            table.innerHTML = `<thead><tr><th>日付</th><th>回数</th></tr></thead><tbody>` + 
-                history.map(item => `<tr><td>${item.date}</td><td>${item.score}回</td></tr>`).reverse().join('') + 
-                `</tbody>`;
+            
+            // 🚀【新機能】テーブル生成時に「今日の日付のセル」にID（table-today-score）を仕込む
+            let tableRowsHtml = history.map(item => {
+                if (item.date === todayStr) {
+                    return `<tr><td>${item.date}</td><td id="table-today-score" style="font-weight:bold; color:#50C878;">${item.score}回</td></tr>`;
+                }
+                return `<tr><td>${item.date}</td><td>${item.score}回</td></tr>`;
+            }).reverse().join('');
+
+            table.innerHTML = `<thead><tr><th>日付</th><th>回数</th></tr></thead><tbody>${tableRowsHtml}</tbody>`;
             historyList.appendChild(table);
         }
     }
