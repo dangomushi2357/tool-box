@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>クリックゲーム - v4.0.0</title>
+    <title>クリックゲーム - v4.0.2</title>
     <link rel="icon" href="dango_1(default).png" type="image/png">
     <style>
         body {
@@ -12,7 +12,6 @@
             margin: 0;
             padding-bottom: 50px;
         }
-        /* === 修正点②：ヘッダーデザインを他のツールと完全統一 === */
         header {
             background-color: #50C878;
             color: white;
@@ -49,8 +48,6 @@
             margin-top: 10px;
             font-size: 1rem;
         }
-
-        /* === 本体のオリジナルレイアウト（一切変更なし！） === */
         .container {
             position: relative;
             text-align: center;
@@ -117,8 +114,6 @@
             width: 100%;
             box-sizing: border-box;
         }
-
-        /* === 修正点③：7件未満でも中央にきれいに並ぶように配置を修正 === */
         #graph-container {
             display: flex;
             align-items: flex-end;
@@ -126,7 +121,7 @@
             gap: 12px;
             border-bottom: 2px solid #333;
             padding: 10px 20px;
-            justify-content: center; /* 右寄せ(flex-end)から中央(center)へ修正 */
+            justify-content: center;
             overflow-x: auto;
         }
         .graph-bar {
@@ -258,25 +253,34 @@
 <div id="tooltip" class="custom-tooltip"></div>
 
 <script>
-    let savedCount = localStorage.getItem('myClickCount');
-    let count = savedCount ? parseInt(savedCount) : 0;
+    let count = 0;
     let todaySessionCount = 0; 
 
+    // === 🛠️ 修正点：ページを読み込んだ瞬間に全てのデータを【完全に同期】させる ===
     window.onload = function() {
+        // ① まずローカルストレージから最新の「累計数」を読み込む
+        let savedCount = localStorage.getItem('myClickCount');
+        count = savedCount ? parseInt(savedCount) : 0;
+
+        // ② 日付チェックと今日のカウントの読み込みを行う
         initStats();
+
+        // ③ 最後に画面に正しい数字を表示する
         updateDisplay();
     };
 
     function countUp() {
         count = count + 1; 
         todaySessionCount = todaySessionCount + 1; 
+        
+        // 1クリックごとにしっかりと最新値をローカルストレージに即時保存
         localStorage.setItem('myClickCount', count);
         localStorage.setItem('todaySessionCount', todaySessionCount);
+        
         updateDisplay();
 
-        // === 修正点①：1回クリックするたびに履歴を更新・保存する形に修正 ===
-        // （以前は 100回ジャスト、または100回より上の時しかセーブされず、100未満で更新すると消えていました）
-        saveScore(todaySessionCount);
+        // 100回未満でもグラフデータと全履歴にリアルタイム保存（フリーズしない安全版）
+        saveScoreOnly(todaySessionCount);
 
         if (todaySessionCount === 100) {
             updateStreak();
@@ -350,9 +354,11 @@
         const lastDate = localStorage.getItem('last_play_date');
         let streak = parseInt(localStorage.getItem('click_streak') || "0");
         let savedTodayCount = localStorage.getItem('todaySessionCount');
+        
         if (lastDate === todayStr) {
             todaySessionCount = savedTodayCount ? parseInt(savedTodayCount) : 0;
         } else {
+            // 新しい日になったら「今日のカウント」だけを0にする
             todaySessionCount = 0;
             localStorage.setItem('todaySessionCount', "0");
             if (lastDate) {
@@ -384,17 +390,24 @@
         saveScore(todaySessionCount);
     }
 
-    function saveScore(score) {
+    // 履歴データ保存（リアルタイム用・超軽量）
+    function saveScoreOnly(score) {
         const todayStr = new Date().toLocaleDateString();
         let history = JSON.parse(localStorage.getItem('click_history') || "[]");
         const todayIdx = history.findIndex(i => i.date === todayStr);
         if (todayIdx > -1) {
-            if (score > history[todayIdx].score) history[todayIdx].score = score;
+            // 今日の最高スコアを常に上書き保存
+            history[todayIdx].score = score;
         } else {
             history.push({ date: todayStr, score: score });
         }
         if (history.length > 365) history.shift();
         localStorage.setItem('click_history', JSON.stringify(history));
+    }
+
+    // 履歴データ保存＋グラフ再描画（確定用）
+    function saveScore(score) {
+        saveScoreOnly(score);
         displayGraph();
     }
 
@@ -406,9 +419,8 @@
         container.innerHTML = '';
         historyList.innerHTML = '';
 
-        let recentHistory = history.slice(-7);
+        let recentHistory = [...history].slice(-7);
         while (recentHistory.length < 7) {
-            // === 修正点③：データが足りない空の列の幅を固定し、グラフ全体を中央寄席に設定することで偏りを解消 ===
             recentHistory.unshift({ date: "", score: -1 });
         }
 
@@ -418,7 +430,7 @@
 
         recentHistory.forEach(data => {
             const column = document.createElement('div');
-            column.style.cssText = "display:flex; flex-direction:column; align-items:center; gap:5px; width:40px;"; // 幅をしっかり固定
+            column.style.cssText = "display:flex; flex-direction:column; align-items:center; gap:5px; width:40px;";
             if (data.score === -1) {
                 container.appendChild(column);
                 return;
@@ -453,6 +465,24 @@
                 `</tbody>`;
             historyList.appendChild(table);
         }
+    }
+
+    function downloadCSV() {
+        const history = JSON.parse(localStorage.getItem('click_history') || "[]");
+        if (history.length === 0) {
+            alert("保存する履歴がありません。");
+            return;
+        }
+        let csvContent = "日付,クリック回数\n";
+        history.forEach(item => { csvContent += item.date + "," + item.score + "\n"; });
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", "click_history_report.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 </script>
 </body>
