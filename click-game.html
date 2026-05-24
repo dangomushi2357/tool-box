@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>クリックゲーム - v4.0.3</title>
+    <title>クリックゲーム - v4.1.0</title>
     <link rel="icon" href="dango_1(default).png" type="image/png">
     <style>
         body {
@@ -124,9 +124,10 @@
             justify-content: center;
             overflow-x: auto;
         }
+        /* === ⚡ 変更点：グラフが滑らかに動くように transition を最適化 === */
         .graph-bar {
             cursor: pointer;
-            transition: opacity 0.2s, height 0.3s;
+            transition: opacity 0.2s, height 0.1s ease-out, background-color 0.3s;
         }
         .custom-tooltip {
             position: absolute;
@@ -247,7 +248,7 @@
         </details>
     </div>
     <br>
-    <button id="rainbow-toggle-btn" class="small-btn home-btn" style="display:none;" onclick="toggleRainbow()">🌈 背景の虹色をON/OFFする</button>
+    <button id="rainbow-toggle-btn" class="small-btn home-btn" style="display:none;" onclick="toggleRainbow()">🌈 背景的虹色をON/OFFする</button>
     <button id="secret-btn" onclick="secretPower()"></button>
 </div>
 <div id="tooltip" class="custom-tooltip"></div>
@@ -270,14 +271,14 @@
         count = count + 1; 
         todaySessionCount = todaySessionCount + 1; 
         
-        // === 🛠️ 修正：クリックした時点で「今日プレイした」という日付を確定させる ===
         localStorage.setItem('myClickCount', count);
         localStorage.setItem('todaySessionCount', todaySessionCount);
-        localStorage.setItem('last_play_date', todayStr); // 👈 これが超重要！！！
+        localStorage.setItem('last_play_date', todayStr);
         
         updateDisplay();
 
-        saveScoreOnly(todaySessionCount);
+        // === 🛠️ 変更点：保存と同時に、DOMを丸ごと作り直さずに「今の棒の高さだけ」をピンポイントで更新する ===
+        saveScoreAndRefreshGraph(todaySessionCount);
 
         if (todaySessionCount === 100) {
             updateStreak();
@@ -355,7 +356,6 @@
         if (lastDate === todayStr) {
             todaySessionCount = savedTodayCount ? parseInt(savedTodayCount) : 0;
         } else {
-            // 日付が違う、またはlastDateがまだ保存されていない時はここに来る
             todaySessionCount = 0;
             localStorage.setItem('todaySessionCount', "0");
             
@@ -364,7 +364,6 @@
                 const last = new Date(lastDate);
                 today.setHours(0, 0, 0, 0);
                 last.setHours(0, 0, 0, 0);
-                // まる1日以上空いていたらストリークをリセット
                 if ((today - last) / (1000 * 60 * 60 * 24) > 1) {
                     streak = 0;
                     localStorage.setItem('click_streak', "0");
@@ -372,23 +371,24 @@
             }
         }
         document.getElementById('streak-count').innerText = streak;
-        displayGraph();
+        
+        // 初回読み込み時は全体をビルド
+        buildGraphFull();
     }
 
     function updateStreak() {
-        const todayStr = new Date().toLocaleDateString();
         let streak = parseInt(localStorage.getItem('click_streak') || "0");
-        
-        // ここでの重複処理を整理
         streak++;
         localStorage.setItem('click_streak', streak);
         document.getElementById('streak-count').innerText = streak;
         alert("100回達成！連続記録更新！");
         
-        saveScore(todaySessionCount);
+        // 100回達成時は色が変わる可能性があるのでフル再描画
+        buildGraphFull();
     }
 
-    function saveScoreOnly(score) {
+    // === 🛠️ 変更点：リアルタイムでデータを保存し、今日の棒だけを動かす関数 ===
+    function saveScoreAndRefreshGraph(score) {
         const todayStr = new Date().toLocaleDateString();
         let history = JSON.parse(localStorage.getItem('click_history') || "[]");
         const todayIdx = history.findIndex(i => i.date === todayStr);
@@ -399,86 +399,16 @@
         }
         if (history.length > 365) history.shift();
         localStorage.setItem('click_history', JSON.stringify(history));
-    }
 
-    function saveScore(score) {
-        saveScoreOnly(score);
-        displayGraph();
-    }
-
-    function displayGraph() {
-        const history = JSON.parse(localStorage.getItem('click_history') || "[]");
-        const container = document.getElementById('graph-container');
-        const historyList = document.getElementById('full-history-list');
-        const tooltip = document.getElementById('tooltip');
-        container.innerHTML = '';
-        historyList.innerHTML = '';
-
+        // 🚀 今日のクリック数を反映して、グラフを動的に更新！
+        // 過去7日間の最大値を取得（基準は最低100）
         let recentHistory = [...history].slice(-7);
-        while (recentHistory.length < 7) {
-            recentHistory.unshift({ date: "", score: -1 });
-        }
-
-        let maxScore = 0;
+        let maxScore = 100;
         recentHistory.forEach(data => { if (data.score > maxScore) maxScore = data.score; });
-        if (maxScore < 100) maxScore = 100;
 
-        recentHistory.forEach(data => {
-            const column = document.createElement('div');
-            column.style.cssText = "display:flex; flex-direction:column; align-items:center; gap:5px; width:40px;";
-            if (data.score === -1) {
-                container.appendChild(column);
-                return;
-            }
-
-            const bar = document.createElement('div');
-            const barHeight = Math.min((data.score / maxScore) * 110, 110);
-            bar.style.cssText = `width:25px; height:${barHeight}px; border-radius:3px 3px 0 0;`;
-            bar.style.backgroundColor = data.score >= 100 ? '#50C878' : '#ccc';
-            bar.className = "graph-bar";
-            bar.onmouseover = (e) => {
-                tooltip.innerText = data.date + ": " + data.score + "回";
-                tooltip.style.display = 'block';
-            };
-            bar.onmousemove = (e) => {
-                tooltip.style.left = (e.pageX + 15) + 'px';
-                tooltip.style.top = (e.pageY + 15) + 'px';
-            };
-            bar.onmouseout = () => { tooltip.style.display = 'none'; };
-            const dateText = document.createElement('div');
-            dateText.innerText = data.date.split('/').slice(1).join('/');
-            dateText.style.fontSize = '10px';
-            column.appendChild(bar);
-            column.appendChild(dateText);
-            container.appendChild(column);
-        });
-        if (history.length > 0) {
-            const table = document.createElement('table');
-            table.className = "history-table";
-            table.innerHTML = `<thead><tr><th>日付</th><th>回数</th></tr></thead><tbody>` + 
-                history.map(item => `<tr><td>${item.date}</td><td>${item.score}回</td></tr>`).reverse().join('') + 
-                `</tbody>`;
-            historyList.appendChild(table);
-        }
-    }
-
-    function downloadCSV() {
-        const history = JSON.parse(localStorage.getItem('click_history') || "[]");
-        if (history.length === 0) {
-            alert("保存する履歴がありません。");
-            return;
-        }
-        let csvContent = "日付,クリック回数\n";
-        history.forEach(item => { csvContent += item.date + "," + item.score + "\n"; });
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.setAttribute("href", url);
-        link.setAttribute("download", "click_history_report.csv");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
-</script>
-</body>
-</html>
+        // 「今日」の要素（ID: bar-today）をピンポイントで取得してニョキニョキさせる
+        const todayBar = document.getElementById('bar-today');
+        if (todayBar) {
+            const barHeight = Math.min((score / maxScore) * 110, 110);
+            todayBar.style.height = barHeight + 'px';
+            // 100
