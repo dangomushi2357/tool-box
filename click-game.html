@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>クリックゲーム - v4.0.2</title>
+    <title>クリックゲーム - v4.0.3</title>
     <link rel="icon" href="dango_1(default).png" type="image/png">
     <style>
         body {
@@ -256,30 +256,27 @@
     let count = 0;
     let todaySessionCount = 0; 
 
-    // === 🛠️ 修正点：ページを読み込んだ瞬間に全てのデータを【完全に同期】させる ===
     window.onload = function() {
-        // ① まずローカルストレージから最新の「累計数」を読み込む
         let savedCount = localStorage.getItem('myClickCount');
         count = savedCount ? parseInt(savedCount) : 0;
 
-        // ② 日付チェックと今日のカウントの読み込みを行う
         initStats();
-
-        // ③ 最後に画面に正しい数字を表示する
         updateDisplay();
     };
 
     function countUp() {
+        const todayStr = new Date().toLocaleDateString();
+        
         count = count + 1; 
         todaySessionCount = todaySessionCount + 1; 
         
-        // 1クリックごとにしっかりと最新値をローカルストレージに即時保存
+        // === 🛠️ 修正：クリックした時点で「今日プレイした」という日付を確定させる ===
         localStorage.setItem('myClickCount', count);
         localStorage.setItem('todaySessionCount', todaySessionCount);
+        localStorage.setItem('last_play_date', todayStr); // 👈 これが超重要！！！
         
         updateDisplay();
 
-        // 100回未満でもグラフデータと全履歴にリアルタイム保存（フリーズしない安全版）
         saveScoreOnly(todaySessionCount);
 
         if (todaySessionCount === 100) {
@@ -358,14 +355,16 @@
         if (lastDate === todayStr) {
             todaySessionCount = savedTodayCount ? parseInt(savedTodayCount) : 0;
         } else {
-            // 新しい日になったら「今日のカウント」だけを0にする
+            // 日付が違う、またはlastDateがまだ保存されていない時はここに来る
             todaySessionCount = 0;
             localStorage.setItem('todaySessionCount', "0");
+            
             if (lastDate) {
                 const today = new Date();
                 const last = new Date(lastDate);
                 today.setHours(0, 0, 0, 0);
                 last.setHours(0, 0, 0, 0);
+                // まる1日以上空いていたらストリークをリセット
                 if ((today - last) / (1000 * 60 * 60 * 24) > 1) {
                     streak = 0;
                     localStorage.setItem('click_streak', "0");
@@ -378,25 +377,22 @@
 
     function updateStreak() {
         const todayStr = new Date().toLocaleDateString();
-        const lastDate = localStorage.getItem('last_play_date');
         let streak = parseInt(localStorage.getItem('click_streak') || "0");
-        if (lastDate !== todayStr) {
-            streak++;
-            localStorage.setItem('click_streak', streak);
-            localStorage.setItem('last_play_date', todayStr);
-            document.getElementById('streak-count').innerText = streak;
-            alert("100回達成！連続記録更新！");
-        }
+        
+        // ここでの重複処理を整理
+        streak++;
+        localStorage.setItem('click_streak', streak);
+        document.getElementById('streak-count').innerText = streak;
+        alert("100回達成！連続記録更新！");
+        
         saveScore(todaySessionCount);
     }
 
-    // 履歴データ保存（リアルタイム用・超軽量）
     function saveScoreOnly(score) {
         const todayStr = new Date().toLocaleDateString();
         let history = JSON.parse(localStorage.getItem('click_history') || "[]");
         const todayIdx = history.findIndex(i => i.date === todayStr);
         if (todayIdx > -1) {
-            // 今日の最高スコアを常に上書き保存
             history[todayIdx].score = score;
         } else {
             history.push({ date: todayStr, score: score });
@@ -405,7 +401,6 @@
         localStorage.setItem('click_history', JSON.stringify(history));
     }
 
-    // 履歴データ保存＋グラフ再描画（確定用）
     function saveScore(score) {
         saveScoreOnly(score);
         displayGraph();
