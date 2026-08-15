@@ -2,24 +2,24 @@
 <urlset xmlns="http://sitemaps.org">
   <!-- 本編のサイト（トップページ） -->
   <url>
-    <loc>https://dangomushi2357.github.io/index.html</loc>
+    <loc>https://dangomushi2357.github.io/tool-box/index.html</loc>
     <priority>0.8</priority>
   </url>
   <!-- クリックゲーム（一番おすすめ） -->
   <url>
-    <loc>https://dangomushi2357.github.io/click-game.html</loc>
+    <loc>https://dangomushi2357.github.io/tool-box/click-game.html</loc>
     <priority>1.0</priority>
   </url>
   <!-- カウンター -->
   <url>
-    <loc>https://dangomushi2357.github.io/counter.html</loc>
+    <loc>https://dangomushi2357.github.io/tool-box/counter.html</loc>
   </url>
   <!-- メモ -->
   <url>
-    <loc>https://dangomushi2357.github.io/memo.html</loc>
+    <loc>https://dangomushi2357.github.io/tool-box/memo.html</loc>
   </url>
   <!-- 日付素数判定 -->
   <url>
-    <loc>https://dangomushi2357.github.io/date-prime.html</loc>
+    <loc>https://dangomushi2357.github.io/tool-box/date-prime.html</loc>
   </url>
 </urlset>
