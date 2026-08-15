@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://sitemaps.org">
+  <!-- 本編のサイト（トップページ） -->
+  <url>
+    <loc>https://github.io</loc>
+    <priority>0.8</priority>
+  </url>
+  <!-- クリックゲーム（一番おすすめ） -->
+  <url>
+    <loc>https://github.ioclick-game.html</loc>
+    <priority>1.0</priority>
+  </url>
+  <!-- カウンター -->
+  <url>
+    <loc>https://github.iocounter.html</loc>
+  </url>
+  <!-- メモ -->
+  <url>
+    <loc>https://github.iomemo.html</loc>
+  </url>
+  <!-- 日付素数判定 -->
+  <url>
+    <loc>https://github.iodate-prime.html</loc>
+  </url>
+</urlset>
