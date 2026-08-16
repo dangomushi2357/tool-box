@@ -1,25 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- 本編のサイト（トップページ） -->
   <url>
-    <loc>https://dangomushi2357.github.io/tool-box/index.html</loc>
-    <priority>0.8</priority>
+    <loc>https://dangomushi2357.github.io/tool-box/</loc>
+    <lastmod>2026-05-26</lastmod>
   </url>
-  <!-- クリックゲーム（一番おすすめ） -->
-  <url>
-    <loc>https://dangomushi2357.github.io/tool-box/click-game.html</loc>
-    <priority>1.0</priority>
-  </url>
-  <!-- カウンター -->
   <url>
     <loc>https://dangomushi2357.github.io/tool-box/counter.html</loc>
+    <lastmod>2026-05-26</lastmod>
   </url>
-  <!-- メモ -->
   <url>
     <loc>https://dangomushi2357.github.io/tool-box/memo.html</loc>
+    <lastmod>2026-05-26</lastmod>
   </url>
-  <!-- 日付素数判定 -->
   <url>
     <loc>https://dangomushi2357.github.io/tool-box/date-prime.html</loc>
+    <lastmod>2026-05-23</lastmod>
+  </url>
+  <url>
+    <loc>https://dangomushi2357.github.io/tool-box/click-game.html</loc>
+    <lastmod>2026-05-20</lastmod>
   </url>
 </urlset>
